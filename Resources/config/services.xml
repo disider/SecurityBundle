@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="security.form.processor.company_form_processor.class">Diside\SecurityBundle\Form\Processor\CompanyFormProcessor</parameter>
+        <parameter key="security.form.processor.user_form_processor.class">Diside\SecurityBundle\Form\Processor\UserFormProcessor</parameter>
+        <parameter key="security.form.processor.category_form_processor.class">Diside\SecurityBundle\Form\Processor\CategoryFormProcessor</parameter>
+        <parameter key="security.form.processor.checklist_template_form_processor.class">Diside\SecurityBundle\Form\Processor\ChecklistTemplateFormProcessor</parameter>
+        <parameter key="security.form.processor.process_running_checklist_form_processor.class">Diside\SecurityBundle\Form\Processor\ProcessRunningChecklistFormProcessor</parameter>
+        <parameter key="security.form.processor.running_checklist_form_processor.class">Diside\SecurityBundle\Form\Processor\RunningChecklistFormProcessor</parameter>
+        <parameter key="security.form.processor.share_request_form_processor.class">Diside\SecurityBundle\Form\Processor\ShareRequestFormProcessor</parameter>
+
+        <parameter key="security.form.processor.registration_form_processor.class">Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor</parameter>
+        <parameter key="security.form.processor.request_reset_password_form_processor.class">Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor</parameter>
+        <parameter key="security.form.processor.reset_password_form_processor.class">Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor</parameter>
+        <parameter key="security.form.processor.change_password_form_processor.class">Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor</parameter>
+
+        <parameter key="security.mailer.default_mailer.class">Diside\SecurityBundle\Mailer\DefaultMailer</parameter>
+
+        <parameter key="security.subscriber.locale_listener.class">Diside\SecurityBundle\Subscriber\LocaleListener</parameter>
+
+        <parameter key="security.mailer.emails" type="collection">
+            <parameter key="no-reply">%noreply_email%</parameter>
+        </parameter>
+
+        <parameter key="security.mailer.display_names" type="collection">
+            <parameter key="no-reply">%noreply_display_name%</parameter>
+        </parameter>
+
+        <parameter key="diside.security.interactor.interactor_factory.class">SecurityComponent\Interactor\InteractorFactory</parameter>
+        <parameter key="diside.security.gateway.company_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway</parameter>
+        <parameter key="diside.security.gateway.user_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMUserGateway</parameter>
+        <parameter key="diside.security.user_provider.class">Diside\SecurityBundle\Security\UserProvider</parameter>
+
+    </parameters>
+
+    <services>
+        <service id="diside.security.user_provider" class="%diside.security.user_provider.class%" >
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+        </service>
+
+
+        <service id="diside.security.gateway.company_gateway" class="%diside.security.gateway.company_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="diside.security.gateway.user_gateway" class="%diside.security.gateway.user_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="diside.security.interactor.interactor_factory" class="%diside.security.interactor.interactor_factory.class%">
+            <argument type="service" id="diside.security.gateway.company_gateway" />
+            <argument type="service" id="diside.security.gateway.user_gateway" />
+        </service>
+
+        <service id="company_form_processor" class="%security.form.processor.company_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="security.context"/>
+        </service>
+
+        <service id="user_form_processor" class="%security.form.processor.user_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="security.context"/>
+            <argument type="service" id="security.encoder_factory" />
+        </service>
+
+        <service id="registration_form_processor" class="%security.form.processor.registration_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="security.encoder_factory" />
+        </service>
+
+        <service id="request_reset_password_form_processor" class="%security.form.processor.request_reset_password_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+        </service>
+
+        <service id="reset_password_form_processor" class="%security.form.processor.reset_password_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="security.encoder_factory" />
+        </service>
+
+        <service id="change_password_form_processor" class="%security.form.processor.change_password_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="security.context"/>
+            <argument type="service" id="security.encoder_factory" />
+        </service>
+
+        <service id="security.mailer" class="%security.mailer.default_mailer.class%">
+            <argument type="service" id="templating" />
+            <argument type="service" id="router" />
+            <argument type="service" id="swiftmailer.mailer" />
+            <argument>%security.mailer.display_names%</argument>
+            <argument>%security.mailer.emails%</argument>
+        </service>
+
+        <!--<service id="security.subscriber.locale_listener" class="%security.subscriber.locale_listener.class%">-->
+            <!--<argument>%kernel.default_locale%</argument>-->
+
+            <!--<tag name="kernel.event_subscriber" />-->
+        <!--</service>-->
+    </services>
+
+</container>

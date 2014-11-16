@@ -1,0 +1,135 @@
+actions:
+    add_company: Add a company
+    add_user: Add a user
+    back_to_list: Back to list
+    close: Close
+    delete: Delete
+    edit: Edit
+    edit_company: Edit company
+    edit_user: Edit user
+    exit_impersonate: Exit
+    impersonate: Impersonate
+    login: Login
+    register: Register
+    register_user: Register user
+    request_reset_password: Request
+    reset_password: Reset
+    reset: Reset
+
+alert:
+    warning: Warning
+
+change_password:
+    title: Change password
+
+companies:
+    delete_confirmation: Are you sure that you want to delete this company?
+    empty_list: No companies are defined
+    title: Companies
+
+company:
+    delete: Delete "%company%"
+    edit: Edit "%company%"
+
+error:
+    bad_credentials: Bad credentials
+    empty_task_template_title: Empty task title
+    unauthorized: Bad credentials
+    wrong_password: Bad credentials
+    email_already_defined: Email already defined
+
+flash:
+  company:
+    created: Company "%company%" successfully created.
+    deleted: Company "%company%" successfully deleted.
+    updated: Company "%company%" successfully updated.
+  password:
+    updated: Password successfully updated.
+  user:
+    created: User "%user%" successfully created.
+    deleted: User "%user%" successfully deleted.
+    updated: User "%user%" successfully updated.
+
+form:
+    action: Action
+    company: Company
+    current_password: Current password
+    email: Email
+    emails: Emails
+    empty_value:
+    is_active: Is active
+    name: Name
+    new_password: New password
+    password: Password
+    remember_me: 'Remember me'
+    remove: Remove
+    save: Save
+    save_and_close: Save and close
+    status: Status
+    username: Email
+
+login:
+    already_registered: Are you already registered?
+    title: Login
+
+menu:
+    companies: Companies
+    homepage: Home
+    login: Login
+    logout: Logout
+    register: Register
+    users: Users
+    welcome: Welcome, <a class="navbar-link" href="%url%" title="%username%">%username%</a> %exit_impersonate%
+
+registration:
+    check_email: Your registration has been successful. Please, check your email and activate your account.
+    completed: Registration completed
+    login: login
+    message: You can now %url%.
+    not_yet_registered: Are you not yet registered?
+    success: Registration successful
+    thank_you: Thank you!
+
+reset_password:
+    check_email: You requested a password reset. Please, check your email and reset your password.
+    completed: You changed your password
+    login: login
+    message: You can now %url%.
+    request: Did you forget your password?
+    request_sent: Your password rest request has been sent
+    reset: Reset your password
+    thank_you: Thank you!
+
+role:
+    admin: Admin
+    manager: Manager
+    user: User
+    superadmin: Superadmin
+
+sort:
+    action: Action
+    company: Company
+    date: Date
+    email: Email
+    is_active: Active?
+    name: Name
+    role: Role
+    type: Type
+    user: User
+
+status:
+    all: All
+    completed: Completed
+    started: Started
+    idle: Idle
+
+user:
+    change_password: Change password
+    delete: Delete "%user%"
+    edit: Edit "%user%"
+
+users:
+    delete_confirmation: Are you sure that you want to delete this user?
+    empty_list: No users are registered for your company.
+    title: Users
+

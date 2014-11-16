@@ -1,0 +1,37 @@
+Diside\SecurityBundle\Entity\User:
+    superadmin:
+        email: superadmin@example.com
+        password: superadminsecret
+        salt: superadminsalt
+        isActive: true
+        roles: [ ROLE_SUPERADMIN, ROLE_ALLOWED_TO_SWITCH, ROLE_ADMIN, ROLE_MANAGER ]
+
+    admin:
+        email: admin@example.com
+        password: adminsecret
+        salt: adminsalt
+        isActive: true
+        roles: [ ROLE_ADMIN, ROLE_MANAGER ]
+        company: @first_company
+
+    manager:
+        email: manager@example.com
+        password: managersecret
+        salt: managersalt
+        isActive: true
+        roles: [ ROLE_MANAGER ]
+        company: @first_company
+
+    user:
+        email: user@example.com
+        password: usersecret
+        salt: usersalt
+        isActive: true
+        company: @first_company
+
+    inactive:
+        email: inactive@example.com
+        password: inactivesecret
+        salt: inactivesalt
+        company: @first_company
+        registrationToken: 12345678

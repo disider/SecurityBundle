@@ -1,0 +1,110 @@
+{% extends '::two-columns.html.twig' %}
+
+{% block main_content %}
+    <h1>{{ 'users.title'|trans }}</h1>
+
+    {% if pagination|length > 0 %}
+        <table id="users" class="table">
+            <tr>
+                <th>{{ 'sort.email'|trans }}</th>
+                {% if app.user.isSuperadmin %}
+                    <th>{{ 'sort.company'|trans }}</th>
+                {% endif %}
+                <th>{{ 'sort.role'|trans }}</th>
+                <th class="text-center">{{ 'sort.is_active'|trans }}</th>
+                <th>&nbsp;</th>
+            </tr>
+
+            {% for user in pagination %}
+                <tr class="user {{ user.isSuperadmin ? 'superadmin' : user.isAdmin ? 'admin' : user.isManager ? 'manager' : '' }} {{ user.isActive ? '' : 'inactive' }}">
+                    <td class="email col-md-{{ app.user.isSuperadmin ? 3 : 6 }}">
+                        {% if is_granted('EDIT', user) %}
+                            <a href="{{ path('user_edit', {'id': user.id }) }}"
+                               title="{{ 'user.edit'|trans({'%user%': user}) }}">{{ user }}</a>
+                        {% else %}
+                            {{ user }}
+                        {% endif %}
+                    </td>
+
+                    {% if is_granted('ROLE_SUPERADMIN') %}
+                        <td class="col-md-2">
+                            {% if user.company %}
+                                <a href="{{ path('company_edit', {'id': user.company.id }) }}"
+                                   title="{{ 'company.edit'|trans({'%company%': user.company}) }}">{{ user.company }}</a>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    <td class="col-md-2">
+                        {{ (user.isSuperadmin ? 'role.superadmin' :
+                        user.isAdmin ? 'role.admin' :
+                        user.isManager ? 'role.manager' :
+                        user.isFreeUser ? 'role.free_user' :
+                        'role.user')|trans }}
+                    </td>
+                    <td class="col-md-2 text-center">
+                        {{ user.active ? icon('ok') : icon('ban-circle') }}
+                    </td>
+
+                    <td class="col-md-3 text-right">
+                        {% if is_granted('EDIT', user) %}
+                            <a class="edit btn btn-xs btn-default"
+                               href="{{ path('user_edit', {'id': user.id }) }}"
+                               title="{{ 'user.edit'|trans({'%user%': user }) }}">{{ icon('pencil') }}</a>
+                        {% else %}
+                            <a class="btn btn-xs btn-default" disabled="disabled"
+                               href="#"
+                               title="{{ 'user.edit'|trans({'%user%': user }) }}">{{ icon('pencil') }}</a>
+                        {% endif %}
+
+                        {% if is_granted('ROLE_ALLOWED_TO_SWITCH') %}
+                            {% if is_granted('IMPERSONATE', user) %}
+                                <a class="impersonate btn btn-xs btn-default"
+                                   href="{{ path('homepage') }}?_switch_user={{ user.email }}"
+                                   title="{{ 'user.impersonate'|trans({'%user%': user}) }}">{{ icon('user') }}</a>
+                            {% else %}
+                                <a class="btn btn-xs btn-default" disabled="disabled"
+                                   href="#"
+                                   title="{{ 'user.impersonate'|trans({'%user%': user}) }}">{{ icon('user') }}</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            {% if is_granted('DELETE', user) %}
+                                <a class="delete btn btn-xs btn-default text-danger"
+                                   href="{{ path('user_delete', {'id': user.id }) }}"
+                                   title="{{ 'user.delete'|trans({'%user%': user }) }}">{{ icon('trash') }}</a>
+                            {% else %}
+                                <a class="btn btn-xs btn-default text-danger" disabled="disabled"
+                                   href="#"
+                                   title="{{ 'user.delete'|trans({'%user%': user }) }}">{{ icon('trash') }}</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <nav class="pull-right">
+            {{ knp_pagination_render(pagination) }}
+        </nav>
+    {% endif %}
+
+    <p class="empty-list {% if pagination|length > 0 %}hidden{% endif %}">
+        {{ 'users.empty_list'|trans }}
+    </p>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="create btn btn-primary"
+           href="{{ path('user_new') }}">{{ 'actions.add_user'|trans }}</a>
+    {% endif %}
+{% endblock main_content %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {#{% include 'DisideSecurityBundle:Default:_filter_js.html.twig' %}#}
+
+    {#{% include 'DisideSecurityBundle:Default:_delete_js.html.twig' with {title: 'users.delete_confirmation'} %}#}
+
+{% endblock javascripts %}

@@ -1,0 +1,51 @@
+{% extends '::two-columns.html.twig' %}
+
+{% block main_content %}
+    <h1>{{ 'companies.title'|trans }}</h1>
+
+    {% if pagination|length > 0 %}
+        <table id="companies" class="table">
+            <tr>
+                <th>{{ 'sort.name'|trans }}</th>
+                <th>&nbsp;</th>
+            </tr>
+            {% for company in pagination %}
+                <tr class="company">
+                    <td class="col-md-9">
+                        <a href="{{ path('company_edit', {'id': company.id }) }}"
+                           title="{{ 'company.edit'|trans({'%company%': company}) }}">{{ company }}</a>
+                    </td>
+
+                    <td class="col-md-3 text-right">
+                        <a class="edit btn btn-xs btn-default"
+                           href="{{ path('company_edit', {'id': company.id }) }}"
+                           title="{{ 'company.edit'|trans({'%company%': company }) }}">{{ icon('pencil') }}</a>
+
+                        <a class="delete btn btn-xs btn-default text-danger"
+                           href="{{ path('company_delete', {'id': company.id }) }}"
+                           title="{{ 'company.delete'|trans({'%company%': company }) }}">{{ icon('trash') }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <nav class="pull-right">
+            {{ knp_pagination_render(pagination) }}
+        </nav>
+    {% endif %}
+
+    <p class="empty-list {% if pagination|length > 0 %}hidden{% endif %}">
+        {{ 'companies.empty_list'|trans }}
+    </p>
+
+    <a class="create btn btn-primary"
+       href="{{ path('company_new') }}">{{ 'actions.add_company'|trans }}</a>
+{% endblock main_content %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {#{% include 'DisideSecurityBundle:Default:_filter_js.html.twig' %}#}
+
+    {#{% include 'DisideSecurityBundle:Default:_delete_js.html.twig' with {title: 'companies.delete_confirmation'} %}#}
+{% endblock javascripts %}

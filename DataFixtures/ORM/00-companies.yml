@@ -1,0 +1,3 @@
+Diside\SecurityBundle\Entity\Company:
+    first_company:
+        name: First company

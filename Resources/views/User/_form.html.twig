@@ -1,0 +1,65 @@
+{% if errors is not null %}
+    {% for error in errors %}
+        <div class="alert alert-danger">
+            {{ ('error.' ~ error)|trans }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{{ form_errors(form) }}
+
+<form id="user" method="POST" action="{{ route }}" novalidate>
+    <div class="panel panel-default">
+        <div class="panel-body ">
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <p>
+                    {{ form_widget(form.is_active) }}
+                    {{ form_label(form.is_active) }}
+                </p>
+
+                {% if form.max_checklist_templates is defined %}
+                    {{ form_label(form.max_checklist_templates) }}
+                    <div class="row form-group">
+                        <div class="col-xs-2">
+                            {{ form_widget(form.max_checklist_templates, { attr: { class: 'text-right' }}) }}
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                {% endif %}
+            {% endif %}
+
+            {% if form.company is defined %}
+                {{ form_row(form.company) }}
+            {% else %}
+                {{ form_row(form.company_id) }}
+            {% endif %}
+
+            {{ form_row(form.email) }}
+
+            {% if form.password is defined %}
+                {{ form_row(form.password) }}
+            {% else %}
+                <label class="control-label" for="change_password">
+                    {{ 'form.password'|trans }}
+                </label>
+                <p class="form-control-static">
+                    <a id="change_password"
+                       href="{{ path('user_change_password', {'id': app.user.id}) }}">{{ 'user.change_password'|trans }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        {{ form_row(form.roles) }}
+    {% endif %}
+
+    <div class="form-actions">
+        {{ form_widget(form.save) }}
+        {{ form_widget(form.save_and_close) }}
+
+        {{ form_rest(form) }}
+    </div>
+
+</form>
