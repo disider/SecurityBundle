@@ -2,6 +2,7 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Security\LoggedUser;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -82,7 +83,7 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
         return new ChangePasswordFormData($id);
     }
 
-    private function encodePassword(User $user, $password)
+    private function encodePassword(LoggedUser $user, $password)
     {
         if($password == null)
             return $password;
