@@ -17,9 +17,6 @@
         <field name="resetPasswordToken" column="reset_password_token" type="string" length="255" nullable="true"/>
         <field name="roles" column="roles" type="array"/>
 
-        <many-to-one field="company" target-entity="Company">
-            <join-column name="company_id" referenced-column-name="id" on-delete="SET NULL" />
-        </many-to-one>
     </mapped-superclass>
 
 </doctrine-mapping>

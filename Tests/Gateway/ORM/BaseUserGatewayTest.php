@@ -2,13 +2,14 @@
 
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
-use Mockery as m;
-use Diside\SecurityComponent\Gateway\UserGateway;
-use Diside\SecurityComponent\Model\Company;
-use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway;
 use Diside\SecurityBundle\Gateway\ORM\ORMUserGateway;
 use Diside\SecurityBundle\Tests\RepositoryTestCase;
+use Diside\SecurityComponent\Gateway\CompanyGateway;
+use Diside\SecurityComponent\Gateway\UserGateway;
+use Diside\SecurityComponent\Model\Company;
+use Diside\SecurityComponent\Model\User;
+use Mockery as m;
 
 abstract class BaseUserGatewayTest extends RepositoryTestCase
 {
@@ -31,7 +32,7 @@ abstract class BaseUserGatewayTest extends RepositoryTestCase
 
     protected function givenCompanies($number, $companyName)
     {
-        for($i = 0; $i < $number; ++$i)
+        for ($i = 0; $i < $number; ++$i)
             $this->givenCompany($companyName . ' ' . $i);
     }
 
@@ -44,8 +45,8 @@ abstract class BaseUserGatewayTest extends RepositoryTestCase
 
     protected function givenUsers($number, $companyName = null, $offset = 0)
     {
-        for($i = 0; $i < $number; ++$i)
-            $this->givenUser(($i + $offset). '@example.com', $companyName);
+        for ($i = 0; $i < $number; ++$i)
+            $this->givenUser(($i + $offset) . '@example.com', $companyName);
     }
 
     protected function givenUser($email = 'adam@example.com', $companyName = null)

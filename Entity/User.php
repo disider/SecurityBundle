@@ -9,25 +9,25 @@ use Diside\SecurityComponent\Model\User as Model;
 class User
 {
     /** @var int */
-    private $id;
+    protected $id;
 
     /** @var string */
-    private $email;
+    protected $email;
 
     /** @var string */
-    private $salt;
+    protected $salt;
 
     /** @var string */
-    private $password;
+    protected $password;
 
     /** @var bool */
-    private $isActive = false;
+    protected $isActive = false;
 
     /** @var array */
-    private $roles = array();
+    protected $roles = array();
 
     /** @var Company */
-    private $company;
+    protected $company;
 
     /** @var string */
     private $registrationToken;

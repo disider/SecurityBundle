@@ -1230,7 +1230,7 @@
       </call>
       <call method="addXmlMappings">
         <argument type="collection">
-          <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml</argument>
+          <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml</argument>
         </argument>
       </call>
       <call method="enableAnnotationMapping">
@@ -1371,7 +1371,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>546caaba15d3f</argument>
+            <argument>546cde8b3f34f</argument>
           </service>
         </argument>
       </argument>
@@ -1682,7 +1682,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>546caaba15d3f</argument>
+            <argument>546cde8b3f34f</argument>
             <argument>null</argument>
           </service>
         </argument>
@@ -2280,23 +2280,23 @@
       <argument type="service" id="templating.locator"/>
       <argument type="service" id="templating.name_parser"/>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views</argument>
         <argument>Framework</argument>
       </call>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views</argument>
         <argument>Security</argument>
       </call>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views</argument>
         <argument>Twig</argument>
       </call>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views</argument>
         <argument>Swiftmailer</argument>
       </call>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views</argument>
         <argument>Doctrine</argument>
       </call>
       <call method="addPath">
@@ -2304,7 +2304,7 @@
         <argument>DisideSecurity</argument>
       </call>
       <call method="addPath">
-        <argument>/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form</argument>
+        <argument>/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form</argument>
       </call>
     </service>
     <service id="swiftmailer.mailer.default.transport" class="Swift_Transport_EsmtpTransport">

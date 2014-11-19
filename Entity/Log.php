@@ -7,19 +7,19 @@ use Diside\SecurityComponent\Model\Log as Model;
 class Log
 {
     /** @var int */
-    private $id;
+    protected $id;
 
     /** @var string */
-    private $action;
+    protected $action;
 
     /** @var string */
-    private $details;
+    protected $details;
 
     /** @var User */
-    private $user;
+    protected $user;
 
     /** @var \DateTime */
-    private $date;
+    protected $date;
 
     public function setId($id)
     {

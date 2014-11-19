@@ -3,10 +3,10 @@
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
 use Diside\SecurityBundle\Gateway\ORM\ORMLogGateway;
-use Mockery as m;
 use Diside\SecurityComponent\Gateway\LogGateway;
 use Diside\SecurityComponent\Model\Log;
 use Diside\SecurityComponent\Model\User;
+use Mockery as m;
 
 class ORMLogGatewayTest extends BaseUserGatewayTest
 {
@@ -81,7 +81,7 @@ class ORMLogGatewayTest extends BaseUserGatewayTest
 
     protected function givenLogs($number, User $user, $details = 'details', $action = 'action')
     {
-        for($i = 0; $i < $number; ++$i)
+        for ($i = 0; $i < $number; ++$i)
             $this->givenLog($action, $details . ' ' . $i, $user);
     }
 
@@ -91,6 +91,5 @@ class ORMLogGatewayTest extends BaseUserGatewayTest
 
         return $this->logGateway->save($log);
     }
-
 
 }

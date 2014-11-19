@@ -2,11 +2,9 @@
 
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
-use Mockery as m;
 use Diside\SecurityComponent\Gateway\CompanyGateway;
 use Diside\SecurityComponent\Model\Company;
-use Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway;
-use Diside\SecurityBundle\Tests\RepositoryTestCase;
+use Mockery as m;
 
 class ORMCompanyGatewayTest extends BaseUserGatewayTest
 {

@@ -2,13 +2,9 @@
 
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
-use Mockery as m;
-use Diside\SecurityComponent\Gateway\ShareRequestGateway;
 use Diside\SecurityComponent\Gateway\UserGateway;
-use Diside\SecurityComponent\Model\ChecklistTemplate;
-use Diside\SecurityComponent\Model\ShareRequest;
 use Diside\SecurityComponent\Model\User;
-use Diside\SecurityBundle\Gateway\ORM\ORMShareRequestGateway;
+use Mockery as m;
 
 class ORMUserGatewayTest extends BaseUserGatewayTest
 {

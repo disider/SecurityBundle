@@ -30,7 +30,6 @@ class UserProvider implements UserProviderInterface
 
         $user = $this->loadUser($username);
 
-
         if ($user == null || !($user instanceof User))
             throw new UsernameNotFoundException();
 

@@ -36,8 +36,10 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        auto_mapping: true
+        auto_mapping: false
         mappings:
             DisideSecurityBundle:
                 type: xml
                 dir: Tests/config/doctrine
+                prefix: ~
+                is_bundle: true
