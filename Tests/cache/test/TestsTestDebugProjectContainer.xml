@@ -1371,7 +1371,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>546ca0ab86475</argument>
+            <argument>546caaba15d3f</argument>
           </service>
         </argument>
       </argument>
@@ -1682,7 +1682,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>546ca0ab86475</argument>
+            <argument>546caaba15d3f</argument>
             <argument>null</argument>
           </service>
         </argument>
@@ -2025,7 +2025,7 @@
                   <argument type="service">
                     <service class="Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver" public="false">
                       <argument type="collection">
-                        <argument key="/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Resources/config/doctrine">Diside\SecurityBundle\Entity</argument>
+                        <argument key="/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/config/doctrine">Diside\SecurityBundle\Entity</argument>
                       </argument>
                       <call method="setGlobalBasename">
                         <argument>mapping</argument>

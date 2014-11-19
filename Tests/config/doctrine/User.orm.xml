@@ -6,6 +6,21 @@
 
 
     <entity name="Diside\SecurityBundle\Entity\User" table="user" >
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="email" column="email" type="string" length="255" unique="true"/>
+        <field name="password" column="password" type="string" length="255"/>
+        <field name="salt" column="salt" type="string" length="255"/>
+        <field name="isActive" column="isActive" type="boolean"/>
+        <field name="registrationToken" column="registration_token" type="string" length="255" nullable="true"/>
+        <field name="resetPasswordToken" column="reset_password_token" type="string" length="255" nullable="true"/>
+        <field name="roles" column="roles" type="array"/>
+
+        <many-to-one field="company" target-entity="Company">
+            <join-column name="company_id" referenced-column-name="id" on-delete="SET NULL" />
+        </many-to-one>
 
     </entity>
 
