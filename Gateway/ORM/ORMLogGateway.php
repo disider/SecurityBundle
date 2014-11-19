@@ -6,6 +6,11 @@ use Diside\SecurityBundle\Entity\Log;
 
 class ORMLogGateway extends AbstractORMLogGateway
 {
+    protected function buildLog()
+    {
+        return new Log();
+    }
+
     protected function getLogRepository()
     {
         return $this->getRepository('DisideSecurityBundle:Log');
@@ -20,5 +25,4 @@ class ORMLogGateway extends AbstractORMLogGateway
     {
         return Log::toModel($entity);
     }
-
 }

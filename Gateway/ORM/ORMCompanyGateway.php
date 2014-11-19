@@ -6,6 +6,11 @@ use Diside\SecurityBundle\Entity\Company;
 
 class ORMCompanyGateway extends AbstractORMCompanyGateway
 {
+    protected function buildCompany()
+    {
+        return new Company();
+    }
+
     protected function getUserRepository()
     {
         return $this->getRepository('DisideSecurityBundle:User');
@@ -23,5 +28,4 @@ class ORMCompanyGateway extends AbstractORMCompanyGateway
 
         return Company::toModel($entity);
     }
-
 }

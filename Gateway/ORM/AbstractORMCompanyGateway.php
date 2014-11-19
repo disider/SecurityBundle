@@ -15,6 +15,8 @@ abstract class AbstractORMCompanyGateway extends AbstractORMBaseGateway implemen
     /** @var EntityRepository */
     private $companyRepository;
 
+    abstract protected function buildCompany();
+
     abstract protected function getCompanyRepository();
 
     public function getName()
@@ -31,7 +33,7 @@ abstract class AbstractORMCompanyGateway extends AbstractORMBaseGateway implemen
 
     public function save(CompanyModel $model)
     {
-        $entity = new CompanyEntity();
+        $entity = $this->buildCompany();
 
         if ($model->getId() != null) {
             $entity = $this->companyRepository->findOneById($model->getId());

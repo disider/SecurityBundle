@@ -18,6 +18,8 @@ abstract class AbstractORMLogGateway extends AbstractORMBaseGateway implements L
     /** @var EntityRepository */
     private $userRepository;
 
+    abstract protected function buildLog();
+
     abstract protected function getLogRepository();
 
     abstract protected function getUserRepository();
@@ -34,10 +36,9 @@ abstract class AbstractORMLogGateway extends AbstractORMBaseGateway implements L
         $this->logRepository = $this->getLogRepository();
         $this->userRepository = $this->getUserRepository();
     }
-
     public function save(LogModel $model)
     {
-        $entity = new LogEntity();
+        $entity = $this->buildLog();
 
         if ($model->getId() != null) {
             $entity = $this->logRepository->findOneById($model->getId());
@@ -49,6 +50,7 @@ abstract class AbstractORMLogGateway extends AbstractORMBaseGateway implements L
 
         return $this->convertEntity($entity);
     }
+
     protected function findAllQuery(array $filters, $pageIndex = 0, $pageSize = PHP_INT_MAX)
     {
         $qb = $this->logRepository->createQueryBuilder('l')
