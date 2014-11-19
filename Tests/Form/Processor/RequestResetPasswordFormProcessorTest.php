@@ -3,21 +3,17 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
-use Mockery as m;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\User;
 use Diside\SecurityBundle\Form\Data\RequestResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
+use Mockery as m;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class RequestResetPasswordFormProcessorTest extends WebTestCase
 {
@@ -32,7 +28,7 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
 
     protected function setUp()
     {
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $this->form = m::mock('Symfony\Component\Form\Form');
         $this->form->shouldReceive('handleRequest');
@@ -74,10 +70,10 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
     public function whenProcessingValidForm_thenHasNoErrors()
     {
         $user = $this->givenUser();
-        $interactor = new RequestResetPasswordInteractorMock($user);
+        $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::REQUEST_RESET_PASSWORD)
+            ->with(SecurityInteractorRegister::REQUEST_RESET_PASSWORD)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -99,7 +95,7 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Undefined');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::REQUEST_RESET_PASSWORD)
+            ->with(SecurityInteractorRegister::REQUEST_RESET_PASSWORD)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -165,21 +161,4 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
             ->andReturn($data);
     }
 
-}
-
-class RequestResetPasswordInteractorMock implements Interactor
-{
-    /** @var User */
-    private $user;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
-    }
 }

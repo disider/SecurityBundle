@@ -3,7 +3,7 @@
 namespace Diside\SecurityBundle\Entity;
 
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use SecurityComponent\Model\User as UserModel;
+use Diside\SecurityComponent\Model\User as UserModel;
 
 class UserManager
 {

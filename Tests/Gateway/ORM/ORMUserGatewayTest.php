@@ -3,11 +3,11 @@
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
 use Mockery as m;
-use SecurityComponent\Gateway\ShareRequestGateway;
-use SecurityComponent\Gateway\UserGateway;
-use SecurityComponent\Model\ChecklistTemplate;
-use SecurityComponent\Model\ShareRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Gateway\ShareRequestGateway;
+use Diside\SecurityComponent\Gateway\UserGateway;
+use Diside\SecurityComponent\Model\ChecklistTemplate;
+use Diside\SecurityComponent\Model\ShareRequest;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Gateway\ORM\ORMShareRequestGateway;
 
 class ORMUserGatewayTest extends BaseUserGatewayTest
@@ -20,7 +20,7 @@ class ORMUserGatewayTest extends BaseUserGatewayTest
         $user = $this->givenUser('adam@example.com');
         $user = $this->userGateway->findOneById($user->getId());
 
-        $this->assertInstanceOf('SecurityComponent\Model\User', $user);
+        $this->assertInstanceOf('Diside\SecurityComponent\Model\User', $user);
     }
 
     /**
@@ -31,7 +31,7 @@ class ORMUserGatewayTest extends BaseUserGatewayTest
         $this->givenUser('adam@example.com');
         $user = $this->userGateway->findOneByEmail('adam@example.com');
 
-        $this->assertInstanceOf('SecurityComponent\Model\User', $user);
+        $this->assertInstanceOf('Diside\SecurityComponent\Model\User', $user);
         $this->assertTrue($user->isActive());
     }
 
@@ -47,7 +47,7 @@ class ORMUserGatewayTest extends BaseUserGatewayTest
 
         $user = $this->userGateway->findOneByRegistrationToken('12345678');
 
-        $this->assertInstanceOf('SecurityComponent\Model\User', $user);
+        $this->assertInstanceOf('Diside\SecurityComponent\Model\User', $user);
         $this->assertThat($user->getRegistrationToken(), $this->equalTo('12345678'));
     }
 
@@ -63,7 +63,7 @@ class ORMUserGatewayTest extends BaseUserGatewayTest
 
         $user = $this->userGateway->findOneByResetPasswordToken('12345678');
 
-        $this->assertInstanceOf('SecurityComponent\Model\User', $user);
+        $this->assertInstanceOf('Diside\SecurityComponent\Model\User', $user);
         $this->assertThat($user->getResetPasswordToken(), $this->equalTo('12345678'));
     }
 

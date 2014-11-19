@@ -6,9 +6,15 @@
     <parameters>
         <parameter key="diside.security.security.voter.role_voter.class">Diside\SecurityBundle\Security\Voter\RoleVoter</parameter>
         <parameter key="diside.security.security.voter.user_voter.class">Diside\SecurityBundle\Security\Voter\UserVoter</parameter>
+
+        <parameter key="diside.security.user_provider.class">Diside\SecurityBundle\Security\UserProvider</parameter>
     </parameters>
 
     <services>
+
+        <service id="diside.security.user_provider" class="%diside.security.user_provider.class%" >
+            <argument type="service" id="interactor_factory"/>
+        </service>
 
         <service id="diside.security.security.voter.role_voter" class="%diside.security.security.voter.role_voter.class%">
             <tag name="security.voter" />

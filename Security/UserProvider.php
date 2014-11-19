@@ -5,9 +5,10 @@ namespace Diside\SecurityBundle\Security;
 use Diside\SecurityBundle\Exception\InactiveUserException;
 use Diside\SecurityBundle\Exception\UndefinedUsernameException;
 use Diside\SecurityBundle\Presenter\UserPresenter;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Request\GetUserByEmailRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Request\GetUserByEmailRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -28,6 +29,7 @@ class UserProvider implements UserProviderInterface
             throw new UndefinedUsernameException();
 
         $user = $this->loadUser($username);
+
 
         if ($user == null || !($user instanceof User))
             throw new UsernameNotFoundException();
@@ -55,7 +57,7 @@ class UserProvider implements UserProviderInterface
 
     protected function loadUser($username)
     {
-        $interactor = $this->interactorFactory->get(InteractorFactory::GET_USER);
+        $interactor = $this->interactorFactory->get(SecurityInteractorRegister::GET_USER);
 
         $request = new GetUserByEmailRequest($username);
 

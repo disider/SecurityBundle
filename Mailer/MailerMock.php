@@ -2,8 +2,8 @@
 
 namespace Diside\SecurityBundle\Mailer;
 
-use SecurityComponent\Model\ShareRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\ShareRequest;
+use Diside\SecurityComponent\Model\User;
 
 class MailerMock implements Mailer
 {
@@ -11,20 +11,17 @@ class MailerMock implements Mailer
     private $to;
 
     public function sendConfirmRegistrationEmailTo(User $user) {
-        $this->template = 'registration_confirm';
-        $this->to = $user->getEmail();
+        $this->registerMail('registration_confirm', $user->getEmail());
     }
 
     public function sendRegistrationCompletedEmailTo(User $user)
     {
-        $this->template = 'registration_completed';
-        $this->to = $user->getEmail();
+        $this->registerMail('registration_completed', $user->getEmail());
     }
 
     public function sendResetPasswordRequestEmailTo(User $user)
     {
-        $this->template = 'request_reset_password';
-        $this->to = $user->getEmail();
+        $this->registerMail('request_reset_password', $user->getEmail());
     }
 
     public function getTemplate()
@@ -35,5 +32,11 @@ class MailerMock implements Mailer
     public function getTo()
     {
         return $this->to;
+    }
+
+    protected function registerMail($template, $email)
+    {
+        $this->template = $template;
+        $this->to = $email;
     }
 }

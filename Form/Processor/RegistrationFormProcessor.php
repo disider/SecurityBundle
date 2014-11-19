@@ -2,20 +2,20 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Builder\UserBuilder;
+use Diside\SecurityBundle\Form\Data\RegistrationFormData;
+use Diside\SecurityBundle\Form\RegistrationForm;
+use Diside\SecurityComponent\Helper\TokenGenerator;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\RegisterUserRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Helper\TokenGenerator;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\RegisterUserRequest;
-use SecurityComponent\Model\User;
-use Diside\SecurityBundle\Form\Data\RegistrationFormData;
-use Diside\SecurityBundle\Form\RegistrationForm;
 
 class RegistrationFormProcessor implements UserPresenter
 {
@@ -39,12 +39,15 @@ class RegistrationFormProcessor implements UserPresenter
 
     /** @var EncoderFactoryInterface */
     private $encoderFactory;
+    /** @var UserBuilder */
+    private $userBuilder;
 
-    public function __construct(FormFactoryInterface $factory, InteractorFactory $interactorFactory, EncoderFactoryInterface $encoderFactory)
+    public function __construct(FormFactoryInterface $factory, InteractorFactory $interactorFactory, EncoderFactoryInterface $encoderFactory, UserBuilder $userBuilder)
     {
         $this->interactorFactory = $interactorFactory;
         $this->factory = $factory;
         $this->encoderFactory = $encoderFactory;
+        $this->userBuilder = $userBuilder;
     }
 
     public function getForm()
@@ -65,13 +68,9 @@ class RegistrationFormProcessor implements UserPresenter
 
                 $request = $this->buildRequest($data);
 
-                $interactor = $this->interactorFactory->get(InteractorFactory::REGISTER_USER);
+                $interactor = $this->interactorFactory->get(SecurityInteractorRegister::REGISTER_USER);
 
                 $interactor->process($request, $this);
-
-//                if($this->hasErrors()) {
-//                    throw new EmailNotUniqueException;
-//                }
 
                 $this->isValid = !$this->hasErrors();
             }
@@ -111,15 +110,21 @@ class RegistrationFormProcessor implements UserPresenter
     private function buildRequest(RegistrationFormData $data)
     {
         $salt = TokenGenerator::generateToken();
-        $user = new User(null, '', '', $salt);
+        $user = $this->userBuilder->build('', '', $salt);
 
         $encoder = $this->encoderFactory->getEncoder($user);
 
+        $request = $this->buildInteractorRequest($data, $encoder, $salt);
+
+        return $request;
+    }
+
+    protected function buildInteractorRequest(RegistrationFormData $data, $encoder, $salt)
+    {
         $request = new RegisterUserRequest(
             $data->getEmail(),
             $encoder->encodePassword($data->getPassword(), $salt),
             $salt);
-
         return $request;
     }
 }

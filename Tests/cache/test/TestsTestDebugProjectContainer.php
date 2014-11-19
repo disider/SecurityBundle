@@ -48,13 +48,17 @@ class TestsTestDebugProjectContainer extends Container
             'debug.scream_logger_listener' => 'getDebug_ScreamLoggerListenerService',
             'debug.stopwatch' => 'getDebug_StopwatchService',
             'debug.templating.engine.php' => 'getDebug_Templating_Engine_PhpService',
+            'diside.gateway_register' => 'getDiside_GatewayRegisterService',
+            'diside.interactor.security_interactor_register' => 'getDiside_Interactor_SecurityInteractorRegisterService',
+            'diside.logger' => 'getDiside_LoggerService',
             'diside.security.gateway.company_gateway' => 'getDiside_Security_Gateway_CompanyGatewayService',
+            'diside.security.gateway.log_gateway' => 'getDiside_Security_Gateway_LogGatewayService',
             'diside.security.gateway.user_gateway' => 'getDiside_Security_Gateway_UserGatewayService',
-            'diside.security.interactor.interactor_factory' => 'getDiside_Security_Interactor_InteractorFactoryService',
             'diside.security.security.voter.role_voter' => 'getDiside_Security_Security_Voter_RoleVoterService',
             'diside.security.security.voter.user_voter' => 'getDiside_Security_Security_Voter_UserVoterService',
             'diside.security.twig.icon_extension' => 'getDiside_Security_Twig_IconExtensionService',
             'diside.security.user_provider' => 'getDiside_Security_UserProviderService',
+            'diside.user_builder' => 'getDiside_UserBuilderService',
             'doctrine' => 'getDoctrineService',
             'doctrine.dbal.connection_factory' => 'getDoctrine_Dbal_ConnectionFactoryService',
             'doctrine.dbal.default_connection' => 'getDoctrine_Dbal_DefaultConnectionService',
@@ -112,6 +116,7 @@ class TestsTestDebugProjectContainer extends Container
             'fragment.renderer.hinclude' => 'getFragment_Renderer_HincludeService',
             'fragment.renderer.inline' => 'getFragment_Renderer_InlineService',
             'http_kernel' => 'getHttpKernelService',
+            'interactor_factory' => 'getInteractorFactoryService',
             'kernel' => 'getKernelService',
             'locale_listener' => 'getLocaleListenerService',
             'paginator_subscriber' => 'getPaginatorSubscriberService',
@@ -244,7 +249,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getAnnotationReaderService()
     {
-        return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\FileCacheReader(new \Doctrine\Common\Annotations\AnnotationReader(), '/git/bundles/SecurityBundle/Tests/cache/test/annotations', true);
+        return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\FileCacheReader(new \Doctrine\Common\Annotations\AnnotationReader(), '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/annotations', true);
     }
 
     /**
@@ -273,7 +278,7 @@ class TestsTestDebugProjectContainer extends Container
         $a = $this->get('kernel');
         $b = $this->get('templating.filename_parser');
 
-        $c = new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplateFinder($a, $b, '/git/bundles/SecurityBundle/Tests/Resources');
+        $c = new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplateFinder($a, $b, '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/Resources');
 
         return $this->services['cache_warmer'] = new \Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate(array(0 => new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplatePathsCacheWarmer($c, $this->get('templating.locator')), 1 => new \Symfony\Bundle\FrameworkBundle\CacheWarmer\RouterCacheWarmer($this->get('router')), 2 => new \Symfony\Bundle\TwigBundle\CacheWarmer\TemplateCacheCacheWarmer($this, $c), 3 => new \Symfony\Bridge\Doctrine\CacheWarmer\ProxyCacheWarmer($this->get('doctrine'))));
     }
@@ -288,7 +293,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getChangePasswordFormProcessorService()
     {
-        return $this->services['change_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'), $this->get('security.context'), $this->get('security.encoder_factory'));
+        return $this->services['change_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.context'), $this->get('security.encoder_factory'));
     }
 
     /**
@@ -301,7 +306,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getCompanyFormProcessorService()
     {
-        return $this->services['company_form_processor'] = new \Diside\SecurityBundle\Form\Processor\CompanyFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'), $this->get('security.context'));
+        return $this->services['company_form_processor'] = new \Diside\SecurityBundle\Form\Processor\CompanyFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.context'));
     }
 
     /**
@@ -436,6 +441,51 @@ class TestsTestDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'diside.gateway_register' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityComponent\Gateway\GatewayRegister A Diside\SecurityComponent\Gateway\GatewayRegister instance.
+     */
+    protected function getDiside_GatewayRegisterService()
+    {
+        $this->services['diside.gateway_register'] = $instance = new \Diside\SecurityComponent\Gateway\GatewayRegister();
+
+        $instance->register($this->get('diside.security.gateway.log_gateway'));
+        $instance->register($this->get('diside.security.gateway.company_gateway'));
+        $instance->register($this->get('diside.security.gateway.user_gateway'));
+
+        return $instance;
+    }
+
+    /**
+     * Gets the 'diside.interactor.security_interactor_register' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityComponent\Interactor\SecurityInteractorRegister A Diside\SecurityComponent\Interactor\SecurityInteractorRegister instance.
+     */
+    protected function getDiside_Interactor_SecurityInteractorRegisterService()
+    {
+        return $this->services['diside.interactor.security_interactor_register'] = new \Diside\SecurityComponent\Interactor\SecurityInteractorRegister();
+    }
+
+    /**
+     * Gets the 'diside.logger' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityComponent\Logger\Logger A Diside\SecurityComponent\Logger\Logger instance.
+     */
+    protected function getDiside_LoggerService()
+    {
+        return $this->services['diside.logger'] = new \Diside\SecurityComponent\Logger\Logger($this->get('diside.security.gateway.log_gateway'));
+    }
+
+    /**
      * Gets the 'diside.security.gateway.company_gateway' service.
      *
      * This service is shared.
@@ -449,6 +499,19 @@ class TestsTestDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'diside.security.gateway.log_gateway' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityBundle\Gateway\ORM\ORMLogGateway A Diside\SecurityBundle\Gateway\ORM\ORMLogGateway instance.
+     */
+    protected function getDiside_Security_Gateway_LogGatewayService()
+    {
+        return $this->services['diside.security.gateway.log_gateway'] = new \Diside\SecurityBundle\Gateway\ORM\ORMLogGateway($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
      * Gets the 'diside.security.gateway.user_gateway' service.
      *
      * This service is shared.
@@ -459,19 +522,6 @@ class TestsTestDebugProjectContainer extends Container
     protected function getDiside_Security_Gateway_UserGatewayService()
     {
         return $this->services['diside.security.gateway.user_gateway'] = new \Diside\SecurityBundle\Gateway\ORM\ORMUserGateway($this->get('doctrine.orm.default_entity_manager'));
-    }
-
-    /**
-     * Gets the 'diside.security.interactor.interactor_factory' service.
-     *
-     * This service is shared.
-     * This method always returns the same instance of the service.
-     *
-     * @return \SecurityComponent\Interactor\InteractorFactory A SecurityComponent\Interactor\InteractorFactory instance.
-     */
-    protected function getDiside_Security_Interactor_InteractorFactoryService()
-    {
-        return $this->services['diside.security.interactor.interactor_factory'] = new \SecurityComponent\Interactor\InteractorFactory($this->get('diside.security.gateway.company_gateway'), $this->get('diside.security.gateway.user_gateway'));
     }
 
     /**
@@ -523,7 +573,20 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getDiside_Security_UserProviderService()
     {
-        return $this->services['diside.security.user_provider'] = new \Diside\SecurityBundle\Security\UserProvider($this->get('diside.security.interactor.interactor_factory'));
+        return $this->services['diside.security.user_provider'] = new \Diside\SecurityBundle\Security\UserProvider($this->get('interactor_factory'));
+    }
+
+    /**
+     * Gets the 'diside.user_builder' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityBundle\Builder\UserBuilder A Diside\SecurityBundle\Builder\UserBuilder instance.
+     */
+    protected function getDiside_UserBuilderService()
+    {
+        return $this->services['diside.user_builder'] = new \Diside\SecurityBundle\Builder\UserBuilder();
     }
 
     /**
@@ -569,7 +632,7 @@ class TestsTestDebugProjectContainer extends Container
         $b = new \Doctrine\DBAL\Configuration();
         $b->setSQLLogger($a);
 
-        return $this->services['doctrine.dbal.default_connection'] = $this->get('doctrine.dbal.connection_factory')->createConnection(array('driver' => 'pdo_sqlite', 'user' => 'test', 'path' => '/git/bundles/SecurityBundle/Tests/sqlite.db.cache', 'charset' => 'UTF8', 'host' => 'localhost', 'port' => NULL, 'password' => NULL, 'driverOptions' => array()), $b, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), array());
+        return $this->services['doctrine.dbal.default_connection'] = $this->get('doctrine.dbal.connection_factory')->createConnection(array('driver' => 'pdo_sqlite', 'user' => 'test', 'path' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/sqlite.db.cache', 'charset' => 'UTF8', 'host' => 'localhost', 'port' => NULL, 'password' => NULL, 'driverOptions' => array()), $b, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), array());
     }
 
     /**
@@ -583,15 +646,15 @@ class TestsTestDebugProjectContainer extends Container
     protected function getDoctrine_Orm_DefaultEntityManagerService()
     {
         $a = new \Doctrine\Common\Cache\ArrayCache();
-        $a->setNamespace('sf2orm_default_e83ba96140d6a73d6b5219048469bd13a5579ba58ff35ff5897fd979cc077641');
+        $a->setNamespace('sf2orm_default_468f8edbb8066e59ec4ccdaaf5bbd41f1269fc7c3e59bc042101a0535a8ad072');
 
         $b = new \Doctrine\Common\Cache\ArrayCache();
-        $b->setNamespace('sf2orm_default_e83ba96140d6a73d6b5219048469bd13a5579ba58ff35ff5897fd979cc077641');
+        $b->setNamespace('sf2orm_default_468f8edbb8066e59ec4ccdaaf5bbd41f1269fc7c3e59bc042101a0535a8ad072');
 
         $c = new \Doctrine\Common\Cache\ArrayCache();
-        $c->setNamespace('sf2orm_default_e83ba96140d6a73d6b5219048469bd13a5579ba58ff35ff5897fd979cc077641');
+        $c->setNamespace('sf2orm_default_468f8edbb8066e59ec4ccdaaf5bbd41f1269fc7c3e59bc042101a0535a8ad072');
 
-        $d = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver(array('/git/bundles/SecurityBundle/Resources/config/doctrine' => 'Diside\\SecurityBundle\\Entity'));
+        $d = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver(array('/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Resources/config/doctrine' => 'Diside\\SecurityBundle\\Entity'));
         $d->setGlobalBasename('mapping');
 
         $e = new \Doctrine\ORM\Mapping\Driver\DriverChain();
@@ -603,7 +666,7 @@ class TestsTestDebugProjectContainer extends Container
         $f->setQueryCacheImpl($b);
         $f->setResultCacheImpl($c);
         $f->setMetadataDriverImpl($e);
-        $f->setProxyDir('/git/bundles/SecurityBundle/Tests/cache/test/doctrine/orm/Proxies');
+        $f->setProxyDir('/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/doctrine/orm/Proxies');
         $f->setProxyNamespace('Proxies');
         $f->setAutoGenerateProxyClasses(true);
         $f->setClassMetadataFactoryName('Doctrine\\ORM\\Mapping\\ClassMetadataFactory');
@@ -666,7 +729,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getFileLocatorService()
     {
-        return $this->services['file_locator'] = new \Symfony\Component\HttpKernel\Config\FileLocator($this->get('kernel'), '/git/bundles/SecurityBundle/Tests/Resources');
+        return $this->services['file_locator'] = new \Symfony\Component\HttpKernel\Config\FileLocator($this->get('kernel'), '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/Resources');
     }
 
     /**
@@ -1325,6 +1388,23 @@ class TestsTestDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'interactor_factory' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityComponent\Interactor\InteractorFactory A Diside\SecurityComponent\Interactor\InteractorFactory instance.
+     */
+    protected function getInteractorFactoryService()
+    {
+        $this->services['interactor_factory'] = $instance = new \Diside\SecurityComponent\Interactor\InteractorFactory($this->get('diside.gateway_register'), $this->get('diside.logger'));
+
+        $instance->addRegister($this->get('diside.interactor.security_interactor_register'));
+
+        return $instance;
+    }
+
+    /**
      * Gets the 'kernel' service.
      *
      * This service is shared.
@@ -1386,7 +1466,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getRegistrationFormProcessorService()
     {
-        return $this->services['registration_form_processor'] = new \Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'), $this->get('security.encoder_factory'));
+        return $this->services['registration_form_processor'] = new \Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.encoder_factory'), $this->get('diside.user_builder'));
     }
 
     /**
@@ -1417,7 +1497,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getRequestResetPasswordFormProcessorService()
     {
-        return $this->services['request_reset_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'));
+        return $this->services['request_reset_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor($this->get('form.factory'), $this->get('interactor_factory'));
     }
 
     /**
@@ -1443,7 +1523,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getResetPasswordFormProcessorService()
     {
-        return $this->services['reset_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'), $this->get('security.encoder_factory'));
+        return $this->services['reset_password_form_processor'] = new \Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.encoder_factory'));
     }
 
     /**
@@ -1469,7 +1549,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getRouterService()
     {
-        return $this->services['router'] = new \Symfony\Bundle\FrameworkBundle\Routing\Router($this, '/git/bundles/SecurityBundle/Tests/config/routing.yml', array('cache_dir' => '/git/bundles/SecurityBundle/Tests/cache/test', 'debug' => true, 'generator_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper', 'generator_cache_class' => 'TestsTestUrlGenerator', 'matcher_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_base_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_dumper_class' => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper', 'matcher_cache_class' => 'TestsTestUrlMatcher', 'strict_requirements' => NULL), $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE), NULL);
+        return $this->services['router'] = new \Symfony\Bundle\FrameworkBundle\Routing\Router($this, '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/config/routing.yml', array('cache_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test', 'debug' => true, 'generator_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper', 'generator_cache_class' => 'TestsTestUrlGenerator', 'matcher_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_base_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_dumper_class' => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper', 'matcher_cache_class' => 'TestsTestUrlMatcher', 'strict_requirements' => NULL), $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE), NULL);
     }
 
     /**
@@ -1610,7 +1690,7 @@ class TestsTestDebugProjectContainer extends Container
         $m = new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($a, $f, new \Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy('migrate'), $i, 'main', $l, new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler($e, $i, array('login_path' => 'login', 'failure_path' => NULL, 'failure_forward' => false, 'failure_path_parameter' => '_failure_path'), NULL), array('check_path' => 'login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), NULL, $c, NULL);
         $m->setRememberMeServices($j);
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $m, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '5469019456680', NULL), 6 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f), 7 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $m, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '546ca0ab86475', NULL), 6 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f), 7 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
     }
 
     /**
@@ -1649,7 +1729,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getSecurity_SecureRandomService()
     {
-        return $this->services['security.secure_random'] = new \Symfony\Component\Security\Core\Util\SecureRandom('/git/bundles/SecurityBundle/Tests/cache/test/secure_random.seed', NULL);
+        return $this->services['security.secure_random'] = new \Symfony\Component\Security\Core\Util\SecureRandom('/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/secure_random.seed', NULL);
     }
 
     /**
@@ -1823,7 +1903,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getSession_Storage_FilesystemService()
     {
-        return $this->services['session.storage.filesystem'] = new \Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage('/git/bundles/SecurityBundle/Tests/cache/test/sessions', 'MOCKSESSID', $this->get('session.storage.metadata_bag'));
+        return $this->services['session.storage.filesystem'] = new \Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage('/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/sessions', 'MOCKSESSID', $this->get('session.storage.metadata_bag'));
     }
 
     /**
@@ -2042,7 +2122,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getTemplating_Helper_CodeService()
     {
-        return $this->services['templating.helper.code'] = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\CodeHelper(NULL, '/git/bundles/SecurityBundle/Tests', 'UTF-8');
+        return $this->services['templating.helper.code'] = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\CodeHelper(NULL, '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests', 'UTF-8');
     }
 
     /**
@@ -2575,7 +2655,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getTranslator_DefaultService()
     {
-        return $this->services['translator.default'] = new \Symfony\Bundle\FrameworkBundle\Translation\Translator($this, $this->get('translator.selector'), array('translation.loader.php' => array(0 => 'php'), 'translation.loader.yml' => array(0 => 'yml'), 'translation.loader.xliff' => array(0 => 'xlf', 1 => 'xliff'), 'translation.loader.po' => array(0 => 'po'), 'translation.loader.mo' => array(0 => 'mo'), 'translation.loader.qt' => array(0 => 'ts'), 'translation.loader.csv' => array(0 => 'csv'), 'translation.loader.res' => array(0 => 'res'), 'translation.loader.dat' => array(0 => 'dat'), 'translation.loader.ini' => array(0 => 'ini'), 'translation.loader.json' => array(0 => 'json')), array('cache_dir' => '/git/bundles/SecurityBundle/Tests/cache/test/translations', 'debug' => true));
+        return $this->services['translator.default'] = new \Symfony\Bundle\FrameworkBundle\Translation\Translator($this, $this->get('translator.selector'), array('translation.loader.php' => array(0 => 'php'), 'translation.loader.yml' => array(0 => 'yml'), 'translation.loader.xliff' => array(0 => 'xlf', 1 => 'xliff'), 'translation.loader.po' => array(0 => 'po'), 'translation.loader.mo' => array(0 => 'mo'), 'translation.loader.qt' => array(0 => 'ts'), 'translation.loader.csv' => array(0 => 'csv'), 'translation.loader.res' => array(0 => 'res'), 'translation.loader.dat' => array(0 => 'dat'), 'translation.loader.ini' => array(0 => 'ini'), 'translation.loader.json' => array(0 => 'json')), array('cache_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/translations', 'debug' => true));
     }
 
     /**
@@ -2588,14 +2668,14 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getTwigService()
     {
-        $this->services['twig'] = $instance = new \Twig_Environment($this->get('twig.loader'), array('exception_controller' => 'twig.controller.exception:showAction', 'autoescape_service' => NULL, 'autoescape_service_method' => NULL, 'cache' => '/git/bundles/SecurityBundle/Tests/cache/test/twig', 'charset' => 'UTF-8', 'debug' => true, 'paths' => array()));
+        $this->services['twig'] = $instance = new \Twig_Environment($this->get('twig.loader'), array('exception_controller' => 'twig.controller.exception:showAction', 'autoescape_service' => NULL, 'autoescape_service_method' => NULL, 'cache' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/twig', 'charset' => 'UTF-8', 'debug' => true, 'paths' => array()));
 
         $instance->addExtension(new \Symfony\Bundle\SecurityBundle\Twig\Extension\LogoutUrlExtension($this->get('templating.helper.logout_url')));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\SecurityExtension($this->get('security.context', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\TranslationExtension($this->get('translator')));
         $instance->addExtension(new \Symfony\Bundle\TwigBundle\Extension\AssetsExtension($this, $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
         $instance->addExtension(new \Symfony\Bundle\TwigBundle\Extension\ActionsExtension($this));
-        $instance->addExtension(new \Symfony\Bridge\Twig\Extension\CodeExtension(NULL, '/git/bundles/SecurityBundle/Tests', 'UTF-8'));
+        $instance->addExtension(new \Symfony\Bridge\Twig\Extension\CodeExtension(NULL, '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests', 'UTF-8'));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\RoutingExtension($this->get('router')));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\YamlExtension());
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\StopwatchExtension($this->get('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
@@ -2648,13 +2728,13 @@ class TestsTestDebugProjectContainer extends Container
     {
         $this->services['twig.loader'] = $instance = new \Symfony\Bundle\TwigBundle\Loader\FilesystemLoader($this->get('templating.locator'), $this->get('templating.name_parser'));
 
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views', 'Framework');
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views', 'Security');
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views', 'Twig');
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views', 'Swiftmailer');
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views', 'Doctrine');
-        $instance->addPath('/git/bundles/SecurityBundle/Resources/views', 'DisideSecurity');
-        $instance->addPath('/git/bundles/SecurityBundle/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views', 'Framework');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views', 'Security');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views', 'Twig');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views', 'Swiftmailer');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views', 'Doctrine');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Resources/views', 'DisideSecurity');
+        $instance->addPath('/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form');
 
         return $instance;
     }
@@ -2695,7 +2775,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getUserFormProcessorService()
     {
-        return $this->services['user_form_processor'] = new \Diside\SecurityBundle\Form\Processor\UserFormProcessor($this->get('form.factory'), $this->get('diside.security.interactor.interactor_factory'), $this->get('security.context'), $this->get('security.encoder_factory'));
+        return $this->services['user_form_processor'] = new \Diside\SecurityBundle\Form\Processor\UserFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.context'), $this->get('security.encoder_factory'), $this->get('diside.user_builder'));
     }
 
     /**
@@ -2726,7 +2806,7 @@ class TestsTestDebugProjectContainer extends Container
         $instance->setConstraintValidatorFactory(new \Symfony\Bundle\FrameworkBundle\Validator\ConstraintValidatorFactory($this, array('validator.expression' => 'validator.expression', 'Symfony\\Component\\Validator\\Constraints\\EmailValidator' => 'validator.email', 'security.validator.user_password' => 'security.validator.user_password', 'doctrine.orm.validator.unique' => 'doctrine.orm.validator.unique')));
         $instance->setTranslator($this->get('translator'));
         $instance->setTranslationDomain('validators');
-        $instance->addXmlMappings(array(0 => '/git/bundles/SecurityBundle/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml'));
+        $instance->addXmlMappings(array(0 => '/git/projects/whalist/webapps/main/symfony/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml'));
         $instance->enableAnnotationMapping($this->get('annotation_reader'));
         $instance->addMethodMapping('loadValidatorMetadata');
         $instance->setApiVersion(3);
@@ -2831,7 +2911,7 @@ class TestsTestDebugProjectContainer extends Container
     {
         $a = $this->get('security.user_checker');
 
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('5469019456680')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('546ca0ab86475')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 
@@ -2920,7 +3000,7 @@ class TestsTestDebugProjectContainer extends Container
      */
     protected function getTemplating_LocatorService()
     {
-        return $this->services['templating.locator'] = new \Symfony\Bundle\FrameworkBundle\Templating\Loader\TemplateLocator($this->get('file_locator'), '/git/bundles/SecurityBundle/Tests/cache/test');
+        return $this->services['templating.locator'] = new \Symfony\Bundle\FrameworkBundle\Templating\Loader\TemplateLocator($this->get('file_locator'), '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test');
     }
 
     /**
@@ -2991,12 +3071,12 @@ class TestsTestDebugProjectContainer extends Container
     protected function getDefaultParameters()
     {
         return array(
-            'kernel.root_dir' => '/git/bundles/SecurityBundle/Tests',
+            'kernel.root_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests',
             'kernel.environment' => 'test',
             'kernel.debug' => true,
             'kernel.name' => 'Tests',
-            'kernel.cache_dir' => '/git/bundles/SecurityBundle/Tests/cache/test',
-            'kernel.logs_dir' => '/git/bundles/SecurityBundle/Tests/logs',
+            'kernel.cache_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test',
+            'kernel.logs_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/logs',
             'kernel.bundles' => array(
                 'FrameworkBundle' => 'Symfony\\Bundle\\FrameworkBundle\\FrameworkBundle',
                 'SecurityBundle' => 'Symfony\\Bundle\\SecurityBundle\\SecurityBundle',
@@ -3011,8 +3091,8 @@ class TestsTestDebugProjectContainer extends Container
             'database_driver' => 'pdo_sqlite',
             'database_host' => NULL,
             'database_port' => NULL,
-            'database_name' => '/git/bundles/SecurityBundle/Tests/Tests/db/test.db',
-            'database_path' => '/git/bundles/SecurityBundle/Tests/Tests/db/test.db',
+            'database_name' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/Tests/db/test.db',
+            'database_path' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/Tests/db/test.db',
             'database_user' => NULL,
             'database_password' => NULL,
             'locale' => 'en',
@@ -3070,7 +3150,7 @@ class TestsTestDebugProjectContainer extends Container
             'debug.errors_logger_listener.class' => 'Symfony\\Component\\HttpKernel\\EventListener\\ErrorsLoggerListener',
             'debug.event_dispatcher.class' => 'Symfony\\Component\\HttpKernel\\Debug\\TraceableEventDispatcher',
             'debug.stopwatch.class' => 'Symfony\\Component\\Stopwatch\\Stopwatch',
-            'debug.container.dump' => '/git/bundles/SecurityBundle/Tests/cache/test/TestsTestDebugProjectContainer.xml',
+            'debug.container.dump' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/TestsTestDebugProjectContainer.xml',
             'debug.controller_resolver.class' => 'Symfony\\Component\\HttpKernel\\Controller\\TraceableControllerResolver',
             'debug.debug_handlers_listener.class' => 'Symfony\\Component\\HttpKernel\\EventListener\\DebugHandlersListener',
             'kernel.secret' => 'ThisTokenIsNotSoSecretChangeIt',
@@ -3096,7 +3176,7 @@ class TestsTestDebugProjectContainer extends Container
             'session.storage.options' => array(
                 'gc_probability' => 1,
             ),
-            'session.save_path' => '/git/bundles/SecurityBundle/Tests/cache/test/sessions',
+            'session.save_path' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/sessions',
             'session.metadata.update_threshold' => '0',
             'security.secure_random.class' => 'Symfony\\Component\\Security\\Core\\Util\\SecureRandom',
             'form.resolved_type_factory.class' => 'Symfony\\Component\\Form\\ResolvedFormTypeFactory',
@@ -3179,7 +3259,7 @@ class TestsTestDebugProjectContainer extends Container
             'router.request_context.host' => 'localhost',
             'router.request_context.scheme' => 'http',
             'router.request_context.base_url' => '',
-            'router.resource' => '/git/bundles/SecurityBundle/Tests/config/routing.yml',
+            'router.resource' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/config/routing.yml',
             'router.cache_class_prefix' => 'TestsTest',
             'request_listener.http_port' => 80,
             'request_listener.https_port' => 443,
@@ -3298,7 +3378,7 @@ class TestsTestDebugProjectContainer extends Container
                 'exception_controller' => 'twig.controller.exception:showAction',
                 'autoescape_service' => NULL,
                 'autoescape_service_method' => NULL,
-                'cache' => '/git/bundles/SecurityBundle/Tests/cache/test/twig',
+                'cache' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/twig',
                 'charset' => 'UTF-8',
                 'debug' => true,
                 'paths' => array(
@@ -3395,7 +3475,7 @@ class TestsTestDebugProjectContainer extends Container
             'doctrine.orm.naming_strategy.default.class' => 'Doctrine\\ORM\\Mapping\\DefaultNamingStrategy',
             'doctrine.orm.naming_strategy.underscore.class' => 'Doctrine\\ORM\\Mapping\\UnderscoreNamingStrategy',
             'doctrine.orm.auto_generate_proxy_classes' => true,
-            'doctrine.orm.proxy_dir' => '/git/bundles/SecurityBundle/Tests/cache/test/doctrine/orm/Proxies',
+            'doctrine.orm.proxy_dir' => '/git/projects/whalist/webapps/main/symfony/vendor/diside/security-bundle/Diside/SecurityBundle/Tests/cache/test/doctrine/orm/Proxies',
             'doctrine.orm.proxy_namespace' => 'Proxies',
             'sensio_framework_extra.view.guesser.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Templating\\TemplateGuesser',
             'sensio_framework_extra.controller.listener.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\ControllerListener',
@@ -3407,8 +3487,16 @@ class TestsTestDebugProjectContainer extends Container
             'sensio_framework_extra.converter.doctrine.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Request\\ParamConverter\\DoctrineParamConverter',
             'sensio_framework_extra.converter.datetime.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Request\\ParamConverter\\DateTimeParamConverter',
             'sensio_framework_extra.view.listener.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\TemplateListener',
+            'diside.gateway.gateway_register.class' => 'Diside\SecurityComponent\\Gateway\\GatewayRegister',
+            'diside.security.gateway.log_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMLogGateway',
+            'diside.security.gateway.company_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMCompanyGateway',
+            'diside.security.gateway.user_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMUserGateway',
+            'diside.interactor.security_interactor_register.class' => 'Diside\SecurityComponent\\Interactor\\SecurityInteractorRegister',
+            'diside.interactor.interactor_factory.class' => 'Diside\SecurityComponent\\Interactor\\InteractorFactory',
             'diside.security.security.voter.role_voter.class' => 'Diside\\SecurityBundle\\Security\\Voter\\RoleVoter',
             'diside.security.security.voter.user_voter.class' => 'Diside\\SecurityBundle\\Security\\Voter\\UserVoter',
+            'diside.security.user_provider.class' => 'Diside\\SecurityBundle\\Security\\UserProvider',
+            'security.logger.logger.class' => 'Diside\SecurityComponent\\Logger\\Logger',
             'security.form.processor.company_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\CompanyFormProcessor',
             'security.form.processor.user_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\UserFormProcessor',
             'security.form.processor.category_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\CategoryFormProcessor',
@@ -3428,10 +3516,7 @@ class TestsTestDebugProjectContainer extends Container
             'security.mailer.display_names' => array(
                 'no-reply' => 'NoReply',
             ),
-            'diside.security.interactor.interactor_factory.class' => 'SecurityComponent\\Interactor\\InteractorFactory',
-            'diside.security.gateway.company_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMCompanyGateway',
-            'diside.security.gateway.user_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMUserGateway',
-            'diside.security.user_provider.class' => 'Diside\\SecurityBundle\\Security\\UserProvider',
+            'diside.security.builder.user_builder.class' => 'Diside\\SecurityBundle\\Builder\\UserBuilder',
             'diside.security.twig.icon_extension.class' => 'Diside\\SecurityBundle\\Twig\\IconExtension',
             'console.command.ids' => array(
 

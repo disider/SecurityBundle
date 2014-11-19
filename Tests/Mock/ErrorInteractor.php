@@ -2,11 +2,11 @@
 
 namespace Diside\SecurityBundle\Tests\Mock;
 
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Request;
+use Diside\SecurityComponent\Interactor\AbstractInteractor;
+use Diside\SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Request;
 
-class ErrorInteractor implements Interactor
+class ErrorInteractor extends AbstractInteractor
 {
     /** @var string */
     private $error;

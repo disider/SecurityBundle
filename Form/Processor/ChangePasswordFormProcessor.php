@@ -2,22 +2,20 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Diside\SecurityBundle\Security\LoggedUser;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Security\Core\SecurityContext;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\ChangePasswordRequest;
-use SecurityComponent\Interactor\Request\GetUserByChangePasswordTokenRequest;
-use SecurityComponent\Model\User;
 use Diside\SecurityBundle\Exception\UnauthorizedException;
 use Diside\SecurityBundle\Form\ChangePasswordForm;
 use Diside\SecurityBundle\Form\Data\ChangePasswordFormData;
+use Diside\SecurityBundle\Security\LoggedUser;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\ChangePasswordRequest;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\SecurityContextInterface;
+use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
 
 class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPresenter
 {
@@ -70,7 +68,7 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
 
     protected function getSaveInteractorName()
     {
-        return InteractorFactory::SAVE_USER;
+        return SecurityInteractorRegister::SAVE_USER;
     }
 
     protected function buildForm()
@@ -85,7 +83,7 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
 
     private function encodePassword(LoggedUser $user, $password)
     {
-        if($password == null)
+        if ($password == null)
             return $password;
 
         $encoder = $this->encoderFactory->getEncoder($user);

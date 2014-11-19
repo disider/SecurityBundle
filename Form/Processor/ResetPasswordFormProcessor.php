@@ -2,20 +2,20 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
+use Diside\SecurityBundle\Form\ResetPasswordForm;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\GetUserByResetPasswordTokenRequest;
+use Diside\SecurityComponent\Interactor\Request\ResetPasswordRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\GetUserByResetPasswordTokenRequest;
-use SecurityComponent\Interactor\Request\ResetPasswordRequest;
-use SecurityComponent\Model\User;
-use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
-use Diside\SecurityBundle\Form\ResetPasswordForm;
 
 class ResetPasswordFormProcessor implements UserPresenter
 {
@@ -57,7 +57,7 @@ class ResetPasswordFormProcessor implements UserPresenter
 
         $this->getUserByResetPasswordToken($token);
 
-        if($this->hasErrors())
+        if ($this->hasErrors())
             throw new NotFoundHttpException;
 
         if ($request->isMethod('POST')) {
@@ -70,7 +70,7 @@ class ResetPasswordFormProcessor implements UserPresenter
 
                 $request = $this->buildRequest($data);
 
-                $interactor = $this->interactorFactory->get(InteractorFactory::RESET_PASSWORD);
+                $interactor = $this->interactorFactory->get(SecurityInteractorRegister::RESET_PASSWORD);
 
                 $interactor->process($request, $this);
 
@@ -126,7 +126,7 @@ class ResetPasswordFormProcessor implements UserPresenter
 
     protected function getUserByResetPasswordToken($token)
     {
-        $interactor = $this->interactorFactory->get(InteractorFactory::GET_USER);
+        $interactor = $this->interactorFactory->get(SecurityInteractorRegister::GET_USER);
 
         $request = new GetUserByResetPasswordTokenRequest($token);
 

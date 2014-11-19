@@ -2,8 +2,8 @@
 
 namespace Diside\SecurityBundle\Presenter;
 
-use SecurityComponent\Interactor\Presenter\UserPresenter as UserPresenterInterface;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter as UserPresenterInterface;
+use Diside\SecurityComponent\Model\User;
 
 class UserPresenter extends BasePresenter implements UserPresenterInterface
 {

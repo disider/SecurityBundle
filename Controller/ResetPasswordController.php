@@ -6,7 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Interactor\InteractorFactory;
 use Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor;
 use Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor;
 use Diside\SecurityBundle\Mailer\Mailer;

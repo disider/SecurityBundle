@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="diside.gateway.gateway_register.class">Diside\SecurityComponent\Gateway\GatewayRegister</parameter>
+
+        <parameter key="diside.security.gateway.log_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMLogGateway</parameter>
+        <parameter key="diside.security.gateway.company_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway</parameter>
+        <parameter key="diside.security.gateway.user_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMUserGateway</parameter>
+
+    </parameters>
+
+    <services>
+
+        <service id="diside.gateway_register" class="%diside.gateway.gateway_register.class%" >
+            <call method="register">
+                <argument type="service" id="diside.security.gateway.log_gateway" />
+            </call>
+            <call method="register">
+                <argument type="service" id="diside.security.gateway.company_gateway" />
+            </call>
+            <call method="register">
+                <argument type="service" id="diside.security.gateway.user_gateway" />
+            </call>
+        </service>
+
+        <service id="diside.security.gateway.company_gateway" class="%diside.security.gateway.company_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="diside.security.gateway.log_gateway" class="%diside.security.gateway.log_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="diside.security.gateway.user_gateway" class="%diside.security.gateway.user_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+    </services>
+
+</container>

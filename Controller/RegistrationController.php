@@ -2,16 +2,14 @@
 
 namespace Diside\SecurityBundle\Controller;
 
+use Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor;
+use Diside\SecurityBundle\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\ConfirmUserRegistrationRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Request\ConfirmUserRegistrationRequest;
-use SecurityComponent\Interactor\Request\GetUserByRegistrationTokenRequest;
-use Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor;
-use Diside\SecurityBundle\Mailer\Mailer;
-use Diside\SecurityBundle\Presenter\UserPresenter;
+use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
 
 class RegistrationController extends BaseController
 {
@@ -69,7 +67,7 @@ class RegistrationController extends BaseController
         if ($this->getAuthenticatedUser() != null)
             return $this->redirect($this->generateUrl('homepage'));
 
-        $interactor = $this->getInteractor(InteractorFactory::CONFIRM_USER_REGISTRATION);
+        $interactor = $this->getInteractor(SecurityInteractorRegister::CONFIRM_USER_REGISTRATION);
 
         $presenter = new UserPresenter();
 

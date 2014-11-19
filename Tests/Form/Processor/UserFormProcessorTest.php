@@ -3,17 +3,16 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Builder\UserBuilder;
+use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
 use Mockery as m;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Security\LoggedUser;
 use Diside\SecurityBundle\Form\Data\UserFormData;
 use Diside\SecurityBundle\Form\Processor\UserFormProcessor;
@@ -41,7 +40,7 @@ class UserFormProcessorTest extends WebTestCase
     {
         $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
 
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $this->form = m::mock('Symfony\Component\Form\Form');
         $this->form->shouldReceive('handleRequest');
@@ -61,7 +60,9 @@ class UserFormProcessorTest extends WebTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($this->encoder);
 
-        $this->processor = new UserFormProcessor($formFactory, $this->interactorFactory, $this->securityContext, $encoderFactory);
+        $userBuilder = new UserBuilder();
+
+        $this->processor = new UserFormProcessor($formFactory, $this->interactorFactory, $this->securityContext, $encoderFactory, $userBuilder);
     }
 
     /**
@@ -133,7 +134,7 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData($user);
@@ -159,13 +160,13 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new UserInteractorMock($user);
 
         $expect1 = $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor)
             ->once()
         ;
 
         $expect2 = $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor)
             ->once()
         ;
@@ -191,12 +192,12 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor)
         ;
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor)
             ->once()
         ;
@@ -223,12 +224,12 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor)
         ;
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor)
             ->once()
         ;
@@ -256,12 +257,12 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor)
         ;
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor)
             ->once()
         ;
@@ -287,7 +288,7 @@ class UserFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Error');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData($user);
@@ -383,31 +384,4 @@ class UserFormProcessorTest extends WebTestCase
         return $request;
     }
 
-}
-
-class UserInteractorMock implements Interactor
-{
-    /** @var User */
-    private $user;
-
-    /** @var InteractorRequest */
-    private $request;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        $this->request = $request;
-
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
-    }
-
-    public function getRequest()
-    {
-        return $this->request;
-    }
 }

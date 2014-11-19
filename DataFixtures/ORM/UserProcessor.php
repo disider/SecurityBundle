@@ -4,7 +4,7 @@ namespace Diside\SecurityBundle\DataFixtures\ORM;
 
 use Diside\SecurityBundle\Entity\User;
 use Nelmio\Alice\ProcessorInterface;
-use SecurityComponent\Model\User as UserModel;
+use Diside\SecurityComponent\Model\User as UserModel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 

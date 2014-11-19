@@ -2,7 +2,7 @@
 
 namespace Diside\SecurityBundle\Security;
 
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class LoggedUser implements UserInterface

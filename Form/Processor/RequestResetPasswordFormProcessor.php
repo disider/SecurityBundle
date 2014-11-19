@@ -2,19 +2,17 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Security\Core\SecurityContext;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\RequestResetPasswordRequest;
-use SecurityComponent\Model\User;
 use Diside\SecurityBundle\Form\Data\RequestResetPasswordFormData;
 use Diside\SecurityBundle\Form\RequestResetPasswordForm;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\RequestResetPasswordRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class RequestResetPasswordFormProcessor implements UserPresenter
 {
@@ -60,7 +58,7 @@ class RequestResetPasswordFormProcessor implements UserPresenter
 
                 $request = $this->buildRequest($data);
 
-                $interactor = $this->interactorFactory->get(InteractorFactory::REQUEST_RESET_PASSWORD);
+                $interactor = $this->interactorFactory->get(SecurityInteractorRegister::REQUEST_RESET_PASSWORD);
 
                 $interactor->process($request, $this);
 

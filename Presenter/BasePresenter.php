@@ -2,7 +2,7 @@
 
 namespace Diside\SecurityBundle\Presenter;
 
-use SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Presenter;
 
 class BasePresenter implements Presenter
 {

@@ -2,20 +2,17 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Diside\SecurityBundle\Form\CompanyForm;
+use Diside\SecurityBundle\Form\Data\CompanyFormData;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\CompanyPresenter;
+use Diside\SecurityComponent\Interactor\Request\GetCompanyRequest;
+use Diside\SecurityComponent\Interactor\Request\SaveCompanyRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\Company;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\CompanyPresenter;
-use SecurityComponent\Interactor\Request\GetCompanyRequest;
-use SecurityComponent\Interactor\Request\SaveCompanyRequest;
-use SecurityComponent\Model\Company;
-use SecurityComponent\Model\User;
-use Diside\SecurityBundle\Exception\UnauthorizedException;
-use Diside\SecurityBundle\Form\CompanyForm;
-use Diside\SecurityBundle\Form\Data\CompanyFormData;
 
 class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
 {
@@ -25,7 +22,7 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
     protected function buildFormData($id)
     {
         if ($id != null) {
-            $interactor = $this->getInteractorFactory()->get(InteractorFactory::GET_COMPANY);
+            $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::GET_COMPANY);
 
             $request = new GetCompanyRequest($id);
             $interactor->process($request, $this);
@@ -67,7 +64,7 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
 
     protected function getSaveInteractorName()
     {
-        return InteractorFactory::SAVE_COMPANY;
+        return SecurityInteractorRegister::SAVE_COMPANY;
     }
 
     protected function evaluateRedirect()

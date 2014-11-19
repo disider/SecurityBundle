@@ -3,9 +3,9 @@
 namespace Diside\SecurityBundle\Tests\Gateway\ORM;
 
 use Mockery as m;
-use SecurityComponent\Gateway\UserGateway;
-use SecurityComponent\Model\Company;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Gateway\UserGateway;
+use Diside\SecurityComponent\Model\Company;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway;
 use Diside\SecurityBundle\Gateway\ORM\ORMUserGateway;
 use Diside\SecurityBundle\Tests\RepositoryTestCase;

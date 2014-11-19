@@ -3,7 +3,7 @@
 namespace Diside\SecurityBundle\Security\Voter;
 
 use Symfony\Component\Security\Core\User\UserInterface;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Security\LoggedUser;
 
 class UserVoter extends AbstractVoter {
@@ -14,7 +14,7 @@ class UserVoter extends AbstractVoter {
 
     protected function getSupportedClasses()
     {
-        return array('SecurityComponent\Model\User');
+        return array('Diside\SecurityComponent\Model\User');
     }
 
     protected function getSupportedAttributes()

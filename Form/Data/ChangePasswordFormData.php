@@ -3,7 +3,7 @@
 namespace Diside\SecurityBundle\Form\Data;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use SecurityComponent\Model\ChangePassword;
+use Diside\SecurityComponent\Model\ChangePassword;
 
 class ChangePasswordFormData
 {

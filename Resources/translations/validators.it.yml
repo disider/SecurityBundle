@@ -8,3 +8,4 @@ error:
     not_found: Non trovato
     unauthorized: Non autorizzato
     wrong_email: Indirizzo email non corretto
+    wrong_password: Password errata

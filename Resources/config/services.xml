@@ -5,6 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="security.logger.logger.class">Diside\SecurityComponent\Logger\Logger</parameter>
+
         <parameter key="security.form.processor.company_form_processor.class">Diside\SecurityBundle\Form\Processor\CompanyFormProcessor</parameter>
         <parameter key="security.form.processor.user_form_processor.class">Diside\SecurityBundle\Form\Processor\UserFormProcessor</parameter>
         <parameter key="security.form.processor.category_form_processor.class">Diside\SecurityBundle\Form\Processor\CategoryFormProcessor</parameter>
@@ -30,65 +32,54 @@
             <parameter key="no-reply">%noreply_display_name%</parameter>
         </parameter>
 
-        <parameter key="diside.security.interactor.interactor_factory.class">SecurityComponent\Interactor\InteractorFactory</parameter>
-        <parameter key="diside.security.gateway.company_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway</parameter>
-        <parameter key="diside.security.gateway.user_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMUserGateway</parameter>
-        <parameter key="diside.security.user_provider.class">Diside\SecurityBundle\Security\UserProvider</parameter>
+        <parameter key="diside.security.builder.user_builder.class">Diside\SecurityBundle\Builder\UserBuilder</parameter>
 
     </parameters>
 
     <services>
-        <service id="diside.security.user_provider" class="%diside.security.user_provider.class%" >
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+
+        <service id="diside.logger" class="%security.logger.logger.class%" >
+            <argument type="service" id="diside.security.gateway.log_gateway" />
         </service>
 
-
-        <service id="diside.security.gateway.company_gateway" class="%diside.security.gateway.company_gateway.class%" >
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-        </service>
-
-        <service id="diside.security.gateway.user_gateway" class="%diside.security.gateway.user_gateway.class%" >
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-        </service>
-
-        <service id="diside.security.interactor.interactor_factory" class="%diside.security.interactor.interactor_factory.class%">
-            <argument type="service" id="diside.security.gateway.company_gateway" />
-            <argument type="service" id="diside.security.gateway.user_gateway" />
+        <service id="diside.user_builder" class="%diside.security.builder.user_builder.class%" >
         </service>
 
         <service id="company_form_processor" class="%security.form.processor.company_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
         </service>
 
         <service id="user_form_processor" class="%security.form.processor.user_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
             <argument type="service" id="security.encoder_factory" />
+            <argument type="service" id="diside.user_builder" />
         </service>
 
         <service id="registration_form_processor" class="%security.form.processor.registration_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.encoder_factory" />
+            <argument type="service" id="diside.user_builder" />
         </service>
 
         <service id="request_reset_password_form_processor" class="%security.form.processor.request_reset_password_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
         </service>
 
         <service id="reset_password_form_processor" class="%security.form.processor.reset_password_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.encoder_factory" />
         </service>
 
         <service id="change_password_form_processor" class="%security.form.processor.change_password_form_processor.class%">
             <argument type="service" id="form.factory"/>
-            <argument type="service" id="diside.security.interactor.interactor_factory"/>
+            <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
             <argument type="service" id="security.encoder_factory" />
         </service>
@@ -101,11 +92,6 @@
             <argument>%security.mailer.emails%</argument>
         </service>
 
-        <!--<service id="security.subscriber.locale_listener" class="%security.subscriber.locale_listener.class%">-->
-            <!--<argument>%kernel.default_locale%</argument>-->
-
-            <!--<tag name="kernel.event_subscriber" />-->
-        <!--</service>-->
     </services>
 
 </container>

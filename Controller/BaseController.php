@@ -4,11 +4,11 @@ namespace Diside\SecurityBundle\Controller;
 
 use Diside\SecurityBundle\Exception\UnauthorizedException;
 use Diside\SecurityBundle\Mailer\Mailer;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Interactor\Interactor;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
@@ -30,7 +30,7 @@ class BaseController extends Controller
     /** @return InteractorFactory */
     protected function getInteractorFactory()
     {
-        return $this->get('diside.security.interactor.interactor_factory');
+        return $this->get('interactor_factory');
     }
 
     /** @return Interactor */

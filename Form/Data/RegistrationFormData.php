@@ -4,7 +4,7 @@ namespace Diside\SecurityBundle\Form\Data;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use SecurityComponent\Model\Registration;
+use Diside\SecurityComponent\Model\Registration;
 
 class RegistrationFormData
 {

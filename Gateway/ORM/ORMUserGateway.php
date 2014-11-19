@@ -6,8 +6,8 @@ namespace Diside\SecurityBundle\Gateway\ORM;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
-use SecurityComponent\Gateway\UserGateway;
-use SecurityComponent\Model\User as UserModel;
+use Diside\SecurityComponent\Gateway\UserGateway;
+use Diside\SecurityComponent\Model\User as UserModel;
 use Diside\SecurityBundle\Entity\User;
 
 class ORMUserGateway implements UserGateway
@@ -20,6 +20,11 @@ class ORMUserGateway implements UserGateway
 
     /** @var EntityRepository */
     private $companyRepository;
+
+    public function getName()
+    {
+        return self::NAME;
+    }
 
     public function __construct(ObjectManager $objectManager)
     {
@@ -71,11 +76,18 @@ class ORMUserGateway implements UserGateway
         return User::toModel($this->repository->findOneById($id));
     }
 
-    public function findAll($filters = array(), $pageIndex = 0, $pageSize = PHP_INT_MAX)
+    public function findAll(array $filters = array(), $pageIndex = 0, $pageSize = PHP_INT_MAX)
     {
         $qb = $this->findAllQuery($filters, $pageIndex, $pageSize);
 
         return User::toModels($qb->getQuery()->execute());
+    }
+
+    public function countAll(array $filters = array())
+    {
+        return $this->findAllQuery($filters)
+            ->select('COUNT(u.id)')
+            ->getQuery()->getSingleScalarResult();
     }
 
     public function findOneByEmail($email)
@@ -104,13 +116,6 @@ class ORMUserGateway implements UserGateway
         $entities = $this->repository->findById($userIds);
 
         return User::toModels($entities);
-    }
-
-    public function countAll($filters = array())
-    {
-        return $this->findAllQuery($filters)
-            ->select('COUNT(u.id)')
-            ->getQuery()->getSingleScalarResult();
     }
 
     private function findAllQuery($filters, $pageIndex = 0, $pageSize = PHP_INT_MAX)

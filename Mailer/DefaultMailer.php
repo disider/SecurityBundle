@@ -2,7 +2,7 @@
 
 namespace Diside\SecurityBundle\Mailer;
 
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\TwigBundle\TwigEngine;
@@ -36,9 +36,9 @@ class DefaultMailer implements Mailer
     public function sendConfirmRegistrationEmailTo(User $user)
     {
         $this->sendHtml('DisideSecurityBundle:Registration:confirmEmail', $user->getEmail(), array(
-            'url' => $this->router->generate('confirm_registration', array(
+            'url' => $this->generateUrl('confirm_registration', array(
                 'token' => $user->getRegistrationToken()
-            ), true),
+            )),
             'user' => $user->getEmail(),
         ));
     }
@@ -53,9 +53,9 @@ class DefaultMailer implements Mailer
     public function sendResetPasswordRequestEmailTo(User $user)
     {
         $this->sendHtml('DisideSecurityBundle:ResetPassword:requestResetPasswordEmail', $user->getEmail(), array(
-            'url' => $this->router->generate('reset_password', array(
+            'url' => $this->generateUrl('reset_password', array(
                 'token' => $user->getResetPasswordToken()
-            ), true),
+            )),
             'user' => $user->getEmail(),
         ));
     }
@@ -79,7 +79,17 @@ class DefaultMailer implements Mailer
         $this->mailer->send($message);
     }
 
-    protected function composeMessage($template, $email, array $params = array())
+    protected function generateUrl($route, $params, $isAbsolute = true)
+    {
+        return $this->router->generate($route, $params, $isAbsolute);
+    }
+
+    private function getFullEmailAddress($name)
+    {
+        return array($this->emails[$name] => $this->displayNames[$name]);
+    }
+
+    private function composeMessage($template, $email, array $params = array())
     {
         $subjectTemplate = $this->twigEngine->render($template . '.subject.twig', $params);
         $textTemplate = $this->twigEngine->render($template . '.body.twig', $params);
@@ -92,10 +102,5 @@ class DefaultMailer implements Mailer
             ->setBody($textTemplate);
 
         return $message;
-    }
-
-    private function getFullEmailAddress($name)
-    {
-        return array($this->emails[$name] => $this->displayNames[$name]);
     }
 }

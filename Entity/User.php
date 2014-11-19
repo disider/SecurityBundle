@@ -4,7 +4,7 @@ namespace Diside\SecurityBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use SecurityComponent\Model\User as Model;
+use Diside\SecurityComponent\Model\User as Model;
 
 class User
 {
@@ -142,12 +142,6 @@ class User
     public function getResetPasswordToken()
     {
         return $this->resetPasswordToken;
-    }
-
-    public function onRemove(LifecycleEventArgs $eventArgs)
-    {
-        $em = $eventArgs->getEntityManager();
-
     }
 
     public function eraseCredentials()

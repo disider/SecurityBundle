@@ -3,21 +3,17 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
-use Mockery as m;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\User;
 use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
+use Mockery as m;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class ResetPasswordFormProcessorTest extends WebTestCase
 {
@@ -40,7 +36,7 @@ class ResetPasswordFormProcessorTest extends WebTestCase
         $formFactory->shouldReceive('create')
             ->andReturn($this->form);
 
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
         $encoder->shouldReceive('encodePassword');
@@ -74,7 +70,7 @@ class ResetPasswordFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Undefined');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor);
 
         $request = $this->buildRequest();
@@ -89,14 +85,14 @@ class ResetPasswordFormProcessorTest extends WebTestCase
     {
         $user = $this->givenUser();
 
-        $interactor = new ResetPasswordUserInteractorMock($user);
+        $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::RESET_PASSWORD)
+            ->with(SecurityInteractorRegister::RESET_PASSWORD)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -116,16 +112,16 @@ class ResetPasswordFormProcessorTest extends WebTestCase
     public function whenProcessingValidFormButResetInteractorFails_thenHasErrors()
     {
         $user = $this->givenUser();
-        $interactor = new ResetPasswordUserInteractorMock($user);
+        $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor);
 
         $interactor = new ErrorInteractor('Undefined');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::RESET_PASSWORD)
+            ->with(SecurityInteractorRegister::RESET_PASSWORD)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -191,21 +187,4 @@ class ResetPasswordFormProcessorTest extends WebTestCase
             ->andReturn($data);
     }
 
-}
-
-class ResetPasswordUserInteractorMock implements Interactor
-{
-    /** @var User */
-    private $user;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
-    }
 }

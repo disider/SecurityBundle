@@ -2,22 +2,16 @@
 
 namespace Diside\SecurityBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\FindCompaniesPresenter;
-use SecurityComponent\Interactor\Presenter\CompanyPresenter;
-use SecurityComponent\Interactor\Request\DeleteCompanyRequest;
-use SecurityComponent\Interactor\Request\FindCompaniesRequest;
-use SecurityComponent\Model\Company;
 use Diside\SecurityBundle\Form\Processor\CompanyFormProcessor;
-use Diside\SecurityBundle\Presenter\BasePresenter;
-use Diside\SecurityBundle\Presenter\PaginatorPresenter;
+use Diside\SecurityBundle\Presenter\CompaniesPresenter;
+use Diside\SecurityBundle\Presenter\CompanyPresenter;
+use Diside\SecurityComponent\Interactor\Request\DeleteCompanyRequest;
+use Diside\SecurityComponent\Interactor\Request\FindCompaniesRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/companies")
@@ -37,14 +31,14 @@ class CompanyController extends BaseController
 
         $user = $this->getAuthenticatedUser();
 
-        $interactor = $this->getInteractor(InteractorFactory::FIND_COMPANIES);
+        $interactor = $this->getInteractor(SecurityInteractorRegister::FIND_COMPANIES);
 
         $request = new FindCompaniesRequest($user ? $user->getId() : null, $page - 1, $pageSize);
-        $presenter = new GuiFindCompaniesPresenter();
+        $presenter = new CompaniesPresenter();
 
         $interactor->process($request, $presenter);
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $presenter,
             $page,
@@ -82,10 +76,10 @@ class CompanyController extends BaseController
     {
         $user = $this->getAuthenticatedUser();
 
-        $interactor = $this->getInteractor(InteractorFactory::DELETE_COMPANY);
+        $interactor = $this->getInteractor(SecurityInteractorRegister::DELETE_COMPANY);
 
         $request = new DeleteCompanyRequest($user ? $user->getId() : null, $id);
-        $presenter = new GuiDeleteCompanyPresenter();
+        $presenter = new CompanyPresenter();
 
         $interactor->process($request, $presenter);
 
@@ -122,59 +116,3 @@ class CompanyController extends BaseController
 
 }
 
-class GuiFindCompaniesPresenter extends BasePresenter implements PaginatorPresenter, FindCompaniesPresenter
-{
-    private $companies;
-    private $total;
-
-    public function getCompanies()
-    {
-        return $this->companies;
-    }
-
-    public function setCompanies(array $companies)
-    {
-        $this->companies = $companies;
-    }
-
-    public function setCount($count)
-    {
-        $this->total = $count;
-    }
-
-    public function count()
-    {
-        return $this->total;
-    }
-
-    public function getItems()
-    {
-        return $this->companies;
-    }
-
-    public function getTotalCompanies()
-    {
-        return $this->total;
-    }
-
-    public function setTotalCompanies($total)
-    {
-        $this->total = $total;
-    }
-}
-
-class GuiDeleteCompanyPresenter extends BasePresenter implements CompanyPresenter
-{
-    /** @var Company */
-    private $company;
-
-    public function getCompany()
-    {
-        return $this->company;
-    }
-
-    public function setCompany(Company $company)
-    {
-        $this->company = $company;
-    }
-}

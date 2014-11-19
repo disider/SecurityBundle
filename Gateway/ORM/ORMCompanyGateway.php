@@ -6,8 +6,8 @@ namespace Diside\SecurityBundle\Gateway\ORM;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
-use SecurityComponent\Gateway\CompanyGateway;
-use SecurityComponent\Model\Company as CompanyModel;
+use Diside\SecurityComponent\Gateway\CompanyGateway;
+use Diside\SecurityComponent\Model\Company as CompanyModel;
 use Diside\SecurityBundle\Entity\Company as CompanyEntity;
 
 class ORMCompanyGateway implements CompanyGateway
@@ -17,6 +17,11 @@ class ORMCompanyGateway implements CompanyGateway
 
     /** @var EntityRepository */
     private $repository;
+
+    public function getName()
+    {
+        return self::NAME;
+    }
 
     public function __construct(ObjectManager $objectManager)
     {
@@ -56,7 +61,7 @@ class ORMCompanyGateway implements CompanyGateway
         return $this->convertEntity($this->repository->findOneByName($name));
     }
 
-    public function findAll($filters = array(), $pageIndex = 0, $pageSize = PHP_INT_MAX)
+    public function findAll(array $filters = array(), $pageIndex = 0, $pageSize = PHP_INT_MAX)
     {
         $qb = $this->findAllQuery($filters, $pageIndex, $pageSize);
 
@@ -68,7 +73,7 @@ class ORMCompanyGateway implements CompanyGateway
         return $this->convertEntity($this->repository->findOneById($id));
     }
 
-    public function countAll($filters = array())
+    public function countAll(array $filters = array())
     {
         $qb = $this->findAllQuery($filters);
         $qb->select('COUNT(c.id)');

@@ -3,21 +3,19 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
-use Mockery as m;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityBundle\Builder\UserBuilder;
 use Diside\SecurityBundle\Form\Data\RegistrationFormData;
 use Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
+use Mockery as m;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class RegistrationFormProcessorTest extends WebTestCase
 {
@@ -32,7 +30,7 @@ class RegistrationFormProcessorTest extends WebTestCase
 
     protected function setUp()
     {
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
         $encoder->shouldReceive('encodePassword');
@@ -49,7 +47,9 @@ class RegistrationFormProcessorTest extends WebTestCase
         $formFactory->shouldReceive('create')
             ->andReturn($this->form);
 
-        $this->processor = new RegistrationFormProcessor($formFactory, $this->interactorFactory, $encoderFactory);
+        $userBuilder = new UserBuilder();
+
+        $this->processor = new RegistrationFormProcessor($formFactory, $this->interactorFactory, $encoderFactory, $userBuilder);
     }
 
     /**
@@ -81,10 +81,10 @@ class RegistrationFormProcessorTest extends WebTestCase
     public function whenProcessingValidForm_thenHasNoErrors()
     {
         $user = $this->givenUser();
-        $interactor = new RegistrationInteractorMock($user);
+        $interactor = new UserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::REGISTER_USER)
+            ->with(SecurityInteractorRegister::REGISTER_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -106,7 +106,7 @@ class RegistrationFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Undefined');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::REGISTER_USER)
+            ->with(SecurityInteractorRegister::REGISTER_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -173,21 +173,4 @@ class RegistrationFormProcessorTest extends WebTestCase
             ->andReturn($data);
     }
 
-}
-
-class RegistrationInteractorMock implements Interactor
-{
-    /** @var User */
-    private $user;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
-    }
 }

@@ -2,7 +2,7 @@
 
 namespace Diside\SecurityBundle\Entity;
 
-use SecurityComponent\Model\Company as Model;
+use Diside\SecurityComponent\Model\Company as Model;
 
 class Company
 {

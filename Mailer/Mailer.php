@@ -2,8 +2,8 @@
 
 namespace Diside\SecurityBundle\Mailer;
 
-use SecurityComponent\Model\ShareRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\ShareRequest;
+use Diside\SecurityComponent\Model\User;
 
 interface Mailer {
 

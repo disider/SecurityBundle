@@ -4,7 +4,7 @@ namespace Diside\SecurityBundle\Form\Data;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 
 class UserFormData
 {
@@ -23,12 +23,6 @@ class UserFormData
      * @var string
      */
     private $password;
-
-    /**
-     * Assert\GreaterThan(value=0, message="error.min_checklist_templates")
-     * @var int
-     */
-    private $maxChecklistTemplates;
 
     /** @var array */
     private $companies = array();
@@ -91,16 +85,6 @@ class UserFormData
     public function getPassword()
     {
         return $this->password;
-    }
-
-    public function setMaxChecklistTemplates($maxChecklistTemplates)
-    {
-        $this->maxChecklistTemplates = $maxChecklistTemplates;
-    }
-
-    public function getMaxChecklistTemplates()
-    {
-        return $this->maxChecklistTemplates;
     }
 
     public function setIsActive($isActive)

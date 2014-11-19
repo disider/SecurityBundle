@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Security\LoggedUser;
 use Diside\SecurityBundle\Form\Data\UserFormData;
 
@@ -35,9 +35,6 @@ class UserForm extends AbstractType
                         'choices' => $formData->getCompanies(),
                     ));
 
-                    $form->add('max_checklist_templates', 'number', array(
-                        'label' => 'form.max_checklist_templates'
-                    ));
                 } else {
                     $form->add('company', 'genemu_plain', array(
                         'label' => 'form.company',

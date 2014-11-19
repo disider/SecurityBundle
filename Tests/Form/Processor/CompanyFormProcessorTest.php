@@ -3,17 +3,16 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Tests\Mock\CompanyInteractorMock;
 use Mockery as m;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\Company;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Model\Company;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Form\Data\CompanyFormData;
 use Diside\SecurityBundle\Form\Processor\CompanyFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
@@ -48,7 +47,7 @@ class CompanyFormProcessorTest extends WebTestCase
         $formFactory->shouldReceive('create')
             ->andReturn($this->form);
 
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
 
@@ -128,7 +127,7 @@ class CompanyFormProcessorTest extends WebTestCase
         $interactor = new CompanyInteractorMock($company);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_COMPANY)
+            ->with(SecurityInteractorRegister::SAVE_COMPANY)
             ->andReturn($interactor);
 
         $this->givenLoggedSuperadmin();
@@ -153,7 +152,7 @@ class CompanyFormProcessorTest extends WebTestCase
 
         $expect = $this->interactorFactory->shouldReceive('get')
             ->once()
-            ->with(InteractorFactory::GET_COMPANY)
+            ->with(SecurityInteractorRegister::GET_COMPANY)
             ->andReturn($interactor);
 
         $this->givenLoggedSuperadmin();
@@ -172,7 +171,7 @@ class CompanyFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Error');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_COMPANY)
+            ->with(SecurityInteractorRegister::SAVE_COMPANY)
             ->andReturn($interactor);
 
         $this->givenLoggedSuperadmin();
@@ -250,21 +249,4 @@ class CompanyFormProcessorTest extends WebTestCase
             ->andReturn($data);
     }
 
-}
-
-class CompanyInteractorMock implements Interactor
-{
-    /** @var Company */
-    private $company;
-
-    public function __construct(Company $company)
-    {
-        $this->company = $company;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        /** @var CompanyPresenter $presenter */
-        $presenter->setCompany($this->company);
-    }
 }

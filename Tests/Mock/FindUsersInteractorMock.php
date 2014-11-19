@@ -2,10 +2,10 @@
 
 namespace Diside\SecurityBundle\Tests\Mock;
 
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\FindUsersPresenter;
-use SecurityComponent\Interactor\Request;
+use Diside\SecurityComponent\Interactor\Interactor\Interactor;
+use Diside\SecurityComponent\Interactor\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Interactor\Presenter\FindUsersPresenter;
+use Diside\SecurityComponent\Interactor\Interactor\Request;
 
 class FindUsersInteractorMock implements Interactor
 {

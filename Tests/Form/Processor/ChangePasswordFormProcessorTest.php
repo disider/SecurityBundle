@@ -2,18 +2,21 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Security\LoggedUser;
 use Mockery as m;
+use Diside\SecurityComponent\Interactor\InteractorRegister;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\Interactor;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request as InteractorRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityComponent\Interactor\AbstractInteractor;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request as InteractorRequest;
+use Diside\SecurityComponent\Model\User;
 use Diside\SecurityBundle\Form\Data\ChangePasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
@@ -43,7 +46,7 @@ class ChangePasswordFormProcessorTest extends WebTestCase
         $formFactory->shouldReceive('create')
             ->andReturn($this->form);
 
-        $this->interactorFactory = m::mock('SecurityComponent\Interactor\InteractorFactory');
+        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
         $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
 
@@ -92,11 +95,11 @@ class ChangePasswordFormProcessorTest extends WebTestCase
         $interactor = new ChangePasswordUserInteractorMock($user);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::GET_USER)
+            ->with(SecurityInteractorRegister::GET_USER)
             ->andReturn($interactor);
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -120,7 +123,7 @@ class ChangePasswordFormProcessorTest extends WebTestCase
         $interactor = new ErrorInteractor('Undefined');
 
         $this->interactorFactory->shouldReceive('get')
-            ->with(InteractorFactory::SAVE_USER)
+            ->with(SecurityInteractorRegister::SAVE_USER)
             ->andReturn($interactor);
 
         $request = $this->givenValidData();
@@ -144,7 +147,7 @@ class ChangePasswordFormProcessorTest extends WebTestCase
     {
         $user = new User(null, 'test@example.com', 'password', '');
 
-        $token = new DummyToken($user);
+        $token = new DummyToken(new LoggedUser($user));
 
         $this->securityContext
             ->shouldReceive('isGranted')
@@ -201,7 +204,7 @@ class ChangePasswordFormProcessorTest extends WebTestCase
 
 }
 
-class ChangePasswordUserInteractorMock implements Interactor
+class ChangePasswordUserInteractorMock extends AbstractInteractor
 {
     /** @var User */
     private $user;

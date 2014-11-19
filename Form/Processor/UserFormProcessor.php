@@ -2,26 +2,25 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Security\Core\SecurityContext;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Helper\TokenGenerator;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\FindCompaniesPresenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\FindCompaniesRequest;
-use SecurityComponent\Interactor\Request\GetUserByIdRequest;
-use SecurityComponent\Interactor\Request\SaveUserRequest;
-use SecurityComponent\Model\User;
+use Diside\SecurityBundle\Builder\UserBuilder;
 use Diside\SecurityBundle\Exception\UnauthorizedException;
 use Diside\SecurityBundle\Form\Data\UserFormData;
 use Diside\SecurityBundle\Form\UserForm;
+use Diside\SecurityComponent\Helper\TokenGenerator;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\CompaniesPresenter;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\GetUserByIdRequest;
+use Diside\SecurityComponent\Interactor\Request\SaveUserRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class UserFormProcessor extends BaseFormProcessor implements UserPresenter, FindCompaniesPresenter
+class UserFormProcessor extends BaseFormProcessor implements UserPresenter, CompaniesPresenter
 {
     /** @var User */
     private $user;
@@ -34,19 +33,22 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
 
     /** @var EncoderFactoryInterface */
     private $encoderFactory;
+    /** @var UserBuilder */
+    private $userBuilder;
 
-    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext, EncoderFactoryInterface $encoderFactory)
+    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext, EncoderFactoryInterface $encoderFactory, UserBuilder $userBuilder)
     {
         parent::__construct($formFactory, $interactorFactory, $securityContext);
 
         $this->encoderFactory = $encoderFactory;
+        $this->userBuilder = $userBuilder;
     }
 
     protected function buildFormData($id)
     {
         $currentUser = $this->getAuthenticatedUser();
 
-        if($currentUser->isSuperadmin())
+        if ($currentUser->isSuperadmin())
             $this->findCompanies();
 
         if ($id != null) {
@@ -57,10 +59,11 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
             return new UserFormData($user, $this->companies);
         } else {
             $salt = TokenGenerator::generateToken();
-            $user = new User(null, '', '', $salt);
+
+            $user = $this->userBuilder->build('', '', $salt);
             $user = new UserFormData($user, $this->companies);
 
-            if($currentUser->isAdmin())
+            if ($currentUser->isAdmin())
                 $user->setCompany((string)$currentUser->getCompany());
 
             return $user;
@@ -95,9 +98,8 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
             $data->isActive(),
             $data->getRoles());
 
-        if($currentUser->isSuperAdmin()) {
+        if ($currentUser->isSuperAdmin()) {
             $request->companyId = $data->getCompanyId();
-            $request->maximumChecklistTemplates = $data->getMaxChecklistTemplates();
         }
 
         return $request;
@@ -116,7 +118,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
 
     protected function retrieveUserById($id)
     {
-        $interactor = $this->getInteractorFactory()->get(InteractorFactory::GET_USER);
+        $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::GET_USER);
 
         $request = new GetUserByIdRequest($id);
         $interactor->process($request, $this);
@@ -128,7 +130,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
         $currentUser = $this->getAuthenticatedUser();
         $user = $this->getUser();
 
-        if(!($currentUser->isSuperadmin() || ($currentUser->isAdmin() && $currentUser->hasSameCompanyAs($user)) || $currentUser->isSameAs($user)))
+        if (!($currentUser->isSuperadmin() || ($currentUser->isAdmin() && $currentUser->hasSameCompanyAs($user)) || $currentUser->isSameAs($user)))
             throw new UnauthorizedException;
     }
 
@@ -163,7 +165,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
 
     protected function getSaveInteractorName()
     {
-        return InteractorFactory::SAVE_USER;
+        return SecurityInteractorRegister::SAVE_USER;
     }
 
     protected function evaluateRedirect()
@@ -173,7 +175,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Find
 
     private function encodePassword($password, User $user)
     {
-        if($password == null)
+        if ($password == null)
             return null;
 
         $encoder = $this->encoderFactory->getEncoder($user);

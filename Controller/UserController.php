@@ -2,23 +2,18 @@
 
 namespace Diside\SecurityBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter\FindUsersPresenter;
-use SecurityComponent\Interactor\Presenter\UserPresenter;
-use SecurityComponent\Interactor\Request\DeleteUserRequest;
-use SecurityComponent\Interactor\Request\FindUsersRequest;
-use SecurityComponent\Model\User;
-use Diside\SecurityBundle\Exception\UnauthorizedException;
 use Diside\SecurityBundle\Form\Processor\UserFormProcessor;
-use Diside\SecurityBundle\Presenter\BasePresenter;
-use Diside\SecurityBundle\Presenter\PaginatorPresenter;
+use Diside\SecurityBundle\Presenter\UserPresenter;
+use Diside\SecurityBundle\Presenter\UsersPresenter;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter\FindUsersPresenter;
+use Diside\SecurityComponent\Interactor\Request\DeleteUserRequest;
+use Diside\SecurityComponent\Interactor\Request\FindUsersRequest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
 
 /**
  * @Route("/users")
@@ -39,14 +34,14 @@ class UserController extends BaseController
 
         $user = $this->getAuthenticatedUser();
 
-        $interactor = $this->getInteractor(InteractorFactory::FIND_USERS);
+        $interactor = $this->getInteractor(SecurityInteractorRegister::FIND_USERS);
 
         $request = new FindUsersRequest($user ? $user->getId() : null, $page - 1, $pageSize);
-        $presenter = new GuiFindUsersPresenter();
+        $presenter = new UsersPresenter();
 
         $interactor->process($request, $presenter);
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $presenter,
             $page,
@@ -117,14 +112,14 @@ class UserController extends BaseController
     {
         $user = $this->getAuthenticatedUser();
 
-        $interactor = $this->getInteractor(InteractorFactory::DELETE_USER);
+        $interactor = $this->getInteractor(SecurityInteractorRegister::DELETE_USER);
 
         $request = new DeleteUserRequest($user ? $user->getId() : null, $id);
-        $presenter = new GuiDeleteUserPresenter();
+        $presenter = new UserPresenter();
 
         $interactor->process($request, $presenter);
 
-        if($presenter->hasErrors())
+        if ($presenter->hasErrors())
             $this->throwErrors($presenter->getErrors());
 
         $this->addFlash('success', 'flash.user.deleted', array('%user%' => $presenter->getUser()));
@@ -146,7 +141,7 @@ class UserController extends BaseController
             $this->addFlash('success', $id ? 'flash.user.updated' : 'flash.user.created', array('%user%' => $processor->getUser()));
 
             if ($processor->isRedirectingTo(UserFormProcessor::REDIRECT_TO_LIST)) {
-                if($user->isAdmin())
+                if ($user->isAdmin())
                     return $this->redirect($this->generateUrl('users'));
 
                 return $this->redirect($this->generateUrl('homepage'));
@@ -166,61 +161,4 @@ class UserController extends BaseController
         );
     }
 
-}
-
-class GuiFindUsersPresenter extends BasePresenter implements PaginatorPresenter, FindUsersPresenter
-{
-    private $users;
-    private $total;
-
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    public function setUsers(array $users)
-    {
-        $this->users = $users;
-    }
-
-    public function setCount($count)
-    {
-        $this->total = $count;
-    }
-
-    public function count()
-    {
-        return $this->total;
-    }
-
-    public function getItems()
-    {
-        return $this->users;
-    }
-
-    public function getTotalUsers()
-    {
-        return $this->total;
-    }
-
-    public function setTotalUsers($total)
-    {
-        $this->total = $total;
-    }
-}
-
-class GuiDeleteUserPresenter extends BasePresenter implements UserPresenter
-{
-    /** @var User */
-    private $user;
-
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
 }

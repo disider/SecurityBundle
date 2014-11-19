@@ -3,7 +3,7 @@
 namespace Diside\SecurityBundle\Form\Data;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use SecurityComponent\Model\Company;
+use Diside\SecurityComponent\Model\Company;
 
 class CompanyFormData
 {

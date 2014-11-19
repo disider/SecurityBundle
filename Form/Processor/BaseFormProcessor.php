@@ -2,15 +2,14 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Exception\UnauthorizedException;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Model\User;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use SecurityComponent\Interactor\InteractorFactory;
-use SecurityComponent\Interactor\Presenter;
-use SecurityComponent\Model\User;
-use Diside\SecurityBundle\Exception\UnauthorizedException;
 
 abstract class BaseFormProcessor implements Presenter
 {
@@ -147,7 +146,7 @@ abstract class BaseFormProcessor implements Presenter
 
     protected function isButtonClicked($buttonName)
     {
-        if(!$this->form->has($buttonName))
+        if (!$this->form->has($buttonName))
             return false;
 
         return $this->form->get($buttonName)->isClicked();
