@@ -34,6 +34,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
 
     /** @var EncoderFactoryInterface */
     private $encoderFactory;
+
     /** @var UserBuilder */
     private $userBuilder;
 
