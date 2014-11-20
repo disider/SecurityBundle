@@ -10,6 +10,7 @@ use Diside\SecurityComponent\Helper\TokenGenerator;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter\CompaniesPresenter;
 use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request\FindCompaniesRequest;
 use Diside\SecurityComponent\Interactor\Request\GetUserByIdRequest;
 use Diside\SecurityComponent\Interactor\Request\SaveUserRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
@@ -109,7 +110,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
     {
         $user = $this->getAuthenticatedUser();
 
-        $interactor = $this->getInteractorFactory()->get(InteractorFactory::FIND_COMPANIES);
+        $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::FIND_COMPANIES);
         $request = new FindCompaniesRequest($user->getId());
         $interactor->process($request, $this);
 
