@@ -4,7 +4,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <mapped-superclass name="Diside\SecurityBundle\Entity\Log">
+    <mapped-superclass name="Diside\SecurityBundle\Entity\Log" table="log">
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
