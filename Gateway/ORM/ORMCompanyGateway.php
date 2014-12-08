@@ -26,6 +26,6 @@ class ORMCompanyGateway extends AbstractORMCompanyGateway
         if($entity == null)
             return null;
 
-        return Company::toModel($entity);
+        return $entity->toModel();
     }
 }

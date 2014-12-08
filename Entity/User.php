@@ -109,6 +109,11 @@ class User
         $this->roles = $roles;
     }
 
+    public function hasCompany()
+    {
+        return $this->company != null;
+    }
+
     public function getCompany()
     {
         return $this->company;
@@ -121,7 +126,7 @@ class User
 
     public function getCompanyId()
     {
-        return $this->getCompany() ? $this->getCompany()->getId() : null;
+        return $this->hasCompany() ? $this->getCompany()->getId() : null;
     }
 
     public function setRegistrationToken($token)
@@ -157,20 +162,18 @@ class User
         return $models;
     }
 
-    public static function toModel(User $entity = null)
+    public function toModel()
     {
-        if ($entity != null) {
-            $model = new Model($entity->getId(), $entity->getEmail(), $entity->getPassword(), $entity->getSalt());
-            $model->setActive($entity->isActive());
-            $model->setRoles($entity->getRoles());
-            $model->setRegistrationToken($entity->getRegistrationToken());
-            $model->setResetPasswordToken($entity->getResetPasswordToken());
-            $model->setCompany(Company::toModel($entity->getCompany()));
+        $model = new Model($this->getId(), $this->getEmail(), $this->getPassword(), $this->getSalt());
+        $model->setActive($this->isActive());
+        $model->setRoles($this->getRoles());
+        $model->setRegistrationToken($this->getRegistrationToken());
+        $model->setResetPasswordToken($this->getResetPasswordToken());
 
-            return $model;
-        }
+        if($this->hasCompany())
+            $model->setCompany($this->getCompany()->toModel());
 
-        return null;
+        return $model;
     }
 
 

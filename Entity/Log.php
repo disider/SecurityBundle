@@ -71,15 +71,14 @@ class Log
         $this->date = $date;
     }
 
-    public static function toModel(Log $entity = null)
+    public function toModel()
     {
-        if ($entity != null) {
-            $model = new Model($entity->getId(), $entity->getAction(), $entity->getDetails(), User::toModel($entity->getUser()), $entity->getDate());
-
-            return $model;
-        }
-
-        return null;
+        return new Model(
+            $this->getId(),
+            $this->getAction(),
+            $this->getDetails(),
+            $this->getUser()->toModel(),
+            $this->getDate());
     }
 
 }

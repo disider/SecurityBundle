@@ -6,6 +6,7 @@ use Diside\SecurityBundle\Exception\UnauthorizedException;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter;
 use Diside\SecurityComponent\Model\User;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -18,7 +19,7 @@ abstract class BaseFormProcessor implements Presenter
     /** @var array */
     private $errors;
 
-    /** @var BaseForm */
+    /** @var Form */
     private $form;
 
     /** @var InteractorFactory */
@@ -46,6 +47,8 @@ abstract class BaseFormProcessor implements Presenter
     protected abstract function getSaveInteractorName();
 
     protected abstract function buildForm();
+
+    protected abstract function buildRequest();
 
     protected abstract function buildFormData($id);
 
@@ -127,6 +130,7 @@ abstract class BaseFormProcessor implements Presenter
     {
         $token = $this->securityContext->getToken();
         $user = $token->getUser();
+
         return $user;
     }
 
@@ -156,5 +160,4 @@ abstract class BaseFormProcessor implements Presenter
     {
         return $this->form->getData();
     }
-
 }

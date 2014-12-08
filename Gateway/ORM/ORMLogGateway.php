@@ -23,6 +23,6 @@ class ORMLogGateway extends AbstractORMLogGateway
 
     protected function convertEntity($entity)
     {
-        return Log::toModel($entity);
+        return $entity->toModel();
     }
 }

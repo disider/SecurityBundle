@@ -24,7 +24,7 @@ class UserProcessor implements ProcessorInterface
             return;
         }
 
-        $model = new UserModel($object->getId(), $object->getEmail(), $object->getPassword(), $object->getSalt());
+        $model = $object->toModel();
 
         $encoder = $this->encoderFactory->getEncoder($model);
         $object->setPassword($encoder->encodePassword($object->getPassword(), $object->getSalt()));

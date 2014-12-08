@@ -86,6 +86,7 @@ class SecurityController extends Controller
         if ($error instanceof BadCredentialsException)
             return 'error.bad_credentials';
 
+        var_dump($error->getMessage());
         throw new \Exception(get_class($error));
     }
 }

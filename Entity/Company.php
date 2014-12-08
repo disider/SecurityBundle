@@ -35,15 +35,9 @@ class Company
         $this->name = $name;
     }
 
-    public static function toModel(Company $entity = null)
+    public function toModel()
     {
-        if($entity != null) {
-            $model = new Model($entity->getId(), $entity->getName());
-
-            return $model;
-        }
-
-        return null;
+        return new Model($this->getId(), $this->getName());
     }
 
 }

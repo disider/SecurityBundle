@@ -56,19 +56,19 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
         if ($id != null) {
             $this->retrieveUserById($id);
 
-            $user = $this->getUser();
+            $data = $this->getUser();
 
-            return new UserFormData($user, $this->companies);
+            return new UserFormData($data, $this->companies);
         } else {
             $salt = TokenGenerator::generateToken();
 
             $user = $this->userBuilder->build('', '', $salt);
-            $user = new UserFormData($user, $this->companies);
+            $data = new UserFormData($user, $this->companies);
 
             if ($currentUser->isAdmin())
-                $user->setCompany((string)$currentUser->getCompany());
+                $data->setCompany((string)$currentUser->getCompany());
 
-            return $user;
+            return $data;
         }
     }
 
@@ -114,8 +114,6 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
         $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::FIND_COMPANIES);
         $request = new FindCompaniesRequest($user->getId());
         $interactor->process($request, $this);
-
-        return array($interactor, $request);
     }
 
     protected function retrieveUserById($id)

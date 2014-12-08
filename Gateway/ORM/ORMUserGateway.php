@@ -31,6 +31,6 @@ class ORMUserGateway extends AbstractORMUserGateway
         if($entity == null)
             return null;
 
-        return User::toModel($entity);
+        return $entity->toModel();
     }
 }
