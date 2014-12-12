@@ -493,6 +493,7 @@ class TestsTestDebugProjectContainer extends Container
             'diside.security.gateway.log_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMLogGateway',
             'diside.security.gateway.company_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMCompanyGateway',
             'diside.security.gateway.user_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMUserGateway',
+            'diside.security.gateway.page_gateway.class' => 'Diside\\SecurityBundle\\Gateway\\ORM\\ORMPageGateway',
             'diside.interactor.security_interactor_register.class' => 'Diside\\SecurityComponent\\Interactor\\SecurityInteractorRegister',
             'diside.interactor.interactor_factory.class' => 'Diside\\SecurityComponent\\Interactor\\InteractorFactory',
             'diside.security.security.voter.role_voter.class' => 'Diside\\SecurityBundle\\Security\\Voter\\RoleVoter',
@@ -546,6 +547,7 @@ class TestsTestDebugProjectContainer extends Container
             'diside.logger' => 'getDiside_LoggerService',
             'diside.security.gateway.company_gateway' => 'getDiside_Security_Gateway_CompanyGatewayService',
             'diside.security.gateway.log_gateway' => 'getDiside_Security_Gateway_LogGatewayService',
+            'diside.security.gateway.page_gateway' => 'getDiside_Security_Gateway_PageGatewayService',
             'diside.security.gateway.user_gateway' => 'getDiside_Security_Gateway_UserGatewayService',
             'diside.security.security.voter.role_voter' => 'getDiside_Security_Security_Voter_RoleVoterService',
             'diside.security.security.voter.user_voter' => 'getDiside_Security_Security_Voter_UserVoterService',
@@ -931,6 +933,7 @@ class TestsTestDebugProjectContainer extends Container
         $instance->register($this->get('diside.security.gateway.log_gateway'));
         $instance->register($this->get('diside.security.gateway.company_gateway'));
         $instance->register($this->get('diside.security.gateway.user_gateway'));
+        $instance->register($this->get('diside.security.gateway.page_gateway'));
 
         return $instance;
     }
@@ -985,6 +988,19 @@ class TestsTestDebugProjectContainer extends Container
     protected function getDiside_Security_Gateway_LogGatewayService()
     {
         return $this->services['diside.security.gateway.log_gateway'] = new \Diside\SecurityBundle\Gateway\ORM\ORMLogGateway($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'diside.security.gateway.page_gateway' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityBundle\Gateway\ORM\ORMPageGateway A Diside\SecurityBundle\Gateway\ORM\ORMPageGateway instance.
+     */
+    protected function getDiside_Security_Gateway_PageGatewayService()
+    {
+        return $this->services['diside.security.gateway.page_gateway'] = new \Diside\SecurityBundle\Gateway\ORM\ORMPageGateway($this->get('doctrine.orm.default_entity_manager'));
     }
 
     /**
@@ -2270,7 +2286,7 @@ class TestsTestDebugProjectContainer extends Container
         $n = new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($a, $f, new \Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy('migrate'), $i, 'main', $l, $m, array('check_path' => 'login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), NULL, $c, NULL);
         $n->setRememberMeServices($j);
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $n, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c, true), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '548b01f09eda5', NULL, $f), 6 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c), 7 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $n, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c, true), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '548b07c6ce6a4', NULL, $f), 6 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c), 7 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
     }
 
     /**
@@ -3556,7 +3572,7 @@ class TestsTestDebugProjectContainer extends Container
     {
         $a = $this->get('security.user_checker');
 
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('548b01f09eda5')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('548b07c6ce6a4')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 

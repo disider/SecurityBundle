@@ -10,6 +10,7 @@
         <parameter key="diside.security.gateway.log_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMLogGateway</parameter>
         <parameter key="diside.security.gateway.company_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway</parameter>
         <parameter key="diside.security.gateway.user_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMUserGateway</parameter>
+        <parameter key="diside.security.gateway.page_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMPageGateway</parameter>
 
     </parameters>
 
@@ -25,6 +26,9 @@
             <call method="register">
                 <argument type="service" id="diside.security.gateway.user_gateway" />
             </call>
+            <call method="register">
+                <argument type="service" id="diside.security.gateway.page_gateway" />
+            </call>
         </service>
 
         <service id="diside.security.gateway.company_gateway" class="%diside.security.gateway.company_gateway.class%" >
@@ -36,6 +40,10 @@
         </service>
 
         <service id="diside.security.gateway.user_gateway" class="%diside.security.gateway.user_gateway.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="diside.security.gateway.page_gateway" class="%diside.security.gateway.page_gateway.class%" >
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 

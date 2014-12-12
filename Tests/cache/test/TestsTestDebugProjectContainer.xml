@@ -457,6 +457,7 @@
     <parameter key="diside.security.gateway.log_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMLogGateway</parameter>
     <parameter key="diside.security.gateway.company_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway</parameter>
     <parameter key="diside.security.gateway.user_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMUserGateway</parameter>
+    <parameter key="diside.security.gateway.page_gateway.class">Diside\SecurityBundle\Gateway\ORM\ORMPageGateway</parameter>
     <parameter key="diside.interactor.security_interactor_register.class">Diside\SecurityComponent\Interactor\SecurityInteractorRegister</parameter>
     <parameter key="diside.interactor.interactor_factory.class">Diside\SecurityComponent\Interactor\InteractorFactory</parameter>
     <parameter key="diside.security.security.voter.role_voter.class">Diside\SecurityBundle\Security\Voter\RoleVoter</parameter>
@@ -1427,7 +1428,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>548b01f09eda5</argument>
+            <argument>548b07c6ce6a4</argument>
           </service>
         </argument>
       </argument>
@@ -1748,7 +1749,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>548b01f09eda5</argument>
+            <argument>548b07c6ce6a4</argument>
             <argument>null</argument>
             <argument type="service" id="security.authentication.manager"/>
           </service>
@@ -2195,6 +2196,9 @@
       <call method="register">
         <argument type="service" id="diside.security.gateway.user_gateway"/>
       </call>
+      <call method="register">
+        <argument type="service" id="diside.security.gateway.page_gateway"/>
+      </call>
     </service>
     <service id="diside.security.gateway.company_gateway" class="Diside\SecurityBundle\Gateway\ORM\ORMCompanyGateway">
       <argument type="service" id="doctrine.orm.default_entity_manager"/>
@@ -2203,6 +2207,9 @@
       <argument type="service" id="doctrine.orm.default_entity_manager"/>
     </service>
     <service id="diside.security.gateway.user_gateway" class="Diside\SecurityBundle\Gateway\ORM\ORMUserGateway">
+      <argument type="service" id="doctrine.orm.default_entity_manager"/>
+    </service>
+    <service id="diside.security.gateway.page_gateway" class="Diside\SecurityBundle\Gateway\ORM\ORMPageGateway">
       <argument type="service" id="doctrine.orm.default_entity_manager"/>
     </service>
     <service id="diside.interactor.security_interactor_register" class="Diside\SecurityComponent\Interactor\SecurityInteractorRegister"/>

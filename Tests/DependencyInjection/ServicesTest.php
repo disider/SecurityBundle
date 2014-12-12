@@ -27,4 +27,17 @@ class ServicesTest extends ServiceTestCase
     {
         $this->assertService('security.mailer', 'Diside\SecurityBundle\Mailer\DefaultMailer');
     }
+
+
+    /**
+     * @test
+     */
+    public function testGateways()
+    {
+        $this->assertService('diside.security.gateway.company_gateway', 'Diside\SecurityComponent\Gateway\CompanyGateway');
+        $this->assertService('diside.security.gateway.user_gateway', 'Diside\SecurityComponent\Gateway\UserGateway');
+        $this->assertService('diside.security.gateway.log_gateway', 'Diside\SecurityComponent\Gateway\LogGateway');
+        $this->assertService('diside.security.gateway.page_gateway', 'Diside\SecurityComponent\Gateway\PageGateway');
+    }
+
 }
