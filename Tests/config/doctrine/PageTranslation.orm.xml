@@ -13,7 +13,7 @@
         <field name="language" column="language" type="string" length="255"/>
         <field name="title" column="title" type="string" length="255"/>
         <field name="url" column="url" type="string" length="255"/>
-        <field name="text" column="text" type="text"/>
+        <field name="content" column="content" type="text"/>
 
         <many-to-one field="page" target-entity="Page" inversed-by="translations">
             <join-column name="page_id" referenced-column-name="id" on-delete="CASCADE" nullable="false" />
