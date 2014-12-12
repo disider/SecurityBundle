@@ -2,25 +2,25 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Form\Data\ChangePasswordFormData;
+use Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor;
 use Diside\SecurityBundle\Security\LoggedUser;
-use Mockery as m;
+use Diside\SecurityBundle\Tests\Mock\DummyToken;
+use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityComponent\Interactor\AbstractInteractor;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\InteractorRegister;
+use Diside\SecurityComponent\Interactor\Presenter;
+use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
+use Diside\SecurityComponent\Interactor\Request as InteractorRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
+use Diside\SecurityComponent\Model\User;
+use Mockery as m;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use Diside\SecurityComponent\Interactor\AbstractInteractor;
-use Diside\SecurityComponent\Interactor\InteractorFactory;
-use Diside\SecurityComponent\Interactor\Presenter;
-use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
-use Diside\SecurityComponent\Interactor\Request as InteractorRequest;
-use Diside\SecurityComponent\Model\User;
-use Diside\SecurityBundle\Form\Data\ChangePasswordFormData;
-use Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor;
-use Diside\SecurityBundle\Tests\Mock\DummyToken;
-use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 
 class ChangePasswordFormProcessorTest extends WebTestCase
 {
@@ -57,7 +57,12 @@ class ChangePasswordFormProcessorTest extends WebTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($encoder);
 
-        $this->processor = new ChangePasswordFormProcessor($formFactory, $this->interactorFactory, $this->securityContext, $encoderFactory);
+        $this->processor = new ChangePasswordFormProcessor(
+            $formFactory,
+            $this->interactorFactory,
+            $this->securityContext,
+            $encoderFactory
+        );
     }
 
     /**
@@ -140,6 +145,7 @@ class ChangePasswordFormProcessorTest extends WebTestCase
     {
         $request = new Request(array(), array());
         $request->setMethod('POST');
+
         return $request;
     }
 

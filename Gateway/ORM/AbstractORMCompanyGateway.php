@@ -80,4 +80,13 @@ abstract class AbstractORMCompanyGateway extends AbstractORMBaseGateway implemen
 
         return $entity;
     }
+
+    protected function convertEntity($entity)
+    {
+        if($entity != null)
+            return $entity->toModel();
+
+        return null;
+    }
+
 }

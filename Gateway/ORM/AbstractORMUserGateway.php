@@ -141,18 +141,15 @@ abstract class AbstractORMUserGateway extends AbstractORMBaseGateway implements 
         return $qb;
     }
 
+    /**
+     * @param User $entity
+     * @param UserModel $model
+     */
     protected function prePersist($entity, $model)
     {
         $company = $this->getCompanyRepository()->findOneById($model->getCompanyId());
 
-        $entity->setEmail($model->getEmail());
-        $entity->setPassword($model->getPassword());
-        $entity->setSalt($model->getSalt());
-        $entity->setIsActive($model->isActive());
-        $entity->setRoles($model->getRoles());
-        $entity->setRegistrationToken($model->getRegistrationToken());
-        $entity->setResetPasswordToken($model->getResetPasswordToken());
-        $entity->setCompany($company);
+        $entity->fromModel($model, $company);
 
         return $entity;
     }

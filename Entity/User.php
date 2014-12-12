@@ -176,5 +176,17 @@ class User
         return $model;
     }
 
+    public function fromModel($model, $company)
+    {
+        $this->setEmail($model->getEmail());
+        $this->setPassword($model->getPassword());
+        $this->setSalt($model->getSalt());
+        $this->setIsActive($model->isActive());
+        $this->setRoles($model->getRoles());
+        $this->setRegistrationToken($model->getRegistrationToken());
+        $this->setResetPasswordToken($model->getResetPasswordToken());
+        $this->setCompany($company);
+    }
+
 
 }

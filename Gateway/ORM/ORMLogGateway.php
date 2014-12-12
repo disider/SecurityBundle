@@ -20,9 +20,4 @@ class ORMLogGateway extends AbstractORMLogGateway
     {
         return $this->getRepository('DisideSecurityBundle:User');
     }
-
-    protected function convertEntity($entity)
-    {
-        return $entity->toModel();
-    }
 }
