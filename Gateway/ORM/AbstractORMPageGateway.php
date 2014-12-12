@@ -76,6 +76,18 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
         return $qb;
     }
 
+    public function findOneByLanguageAndUrl($language, $url)
+    {
+        $qb = $this->createQueryBuilder()
+            ->leftJoin(self::ROOT_ALIAS . '.translations', 'translation')
+            ->where('translation.language = :language')
+            ->andWhere('translation.url = :url')
+            ->setParameter('language', $language)
+            ->setParameter('url', $url);
+
+        return $this->convertEntity($qb->getQuery()->getOneOrNullResult());
+    }
+
     protected function convertEntity($entity)
     {
         /** @var Page $entity */

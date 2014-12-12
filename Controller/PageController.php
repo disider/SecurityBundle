@@ -7,6 +7,7 @@ use Diside\SecurityComponent\Interactor\Request\GetPageRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 class PageController extends BaseController
 {
@@ -15,13 +16,14 @@ class PageController extends BaseController
      * @Route("/content/{url}", name="show_page")
      * @Template
      */
-    public function showAction($url)
+    public function showAction(Request $request, $url)
     {
+        $locale = $request->getLocale();
         $interactor = $this->getInteractor(SecurityInteractorRegister::GET_PAGE);
 
         $user = $this->getAuthenticatedUser();
 
-        $request = new GetPageRequest($user ? $user->getId() : null, $url);
+        $request = new GetPageRequest($user ? $user->getId() : null, $locale, $url);
         $presenter = new PagePresenter();
 
         $interactor->process($request, $presenter);

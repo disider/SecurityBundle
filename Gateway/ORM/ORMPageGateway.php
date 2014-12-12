@@ -21,16 +21,4 @@ class ORMPageGateway extends AbstractORMPageGateway
         return $this->getRepository('DisideSecurityBundle:User');
     }
 
-    public function findOneByLanguageAndUrl($language, $url)
-    {
-        $qb = $this->createQueryBuilder()
-            ->leftJoin(self::ROOT_ALIAS . 'translations', 'translation')
-            ->where('translation.language = :language')
-            ->andWhere('translation.url = :url')
-            ->setParameter('language', $language)
-            ->setParameter('url', $url);
-
-        return $this->convertEntity($qb->getQuery()->getOneOrNullResult());
-    }
-
 }
