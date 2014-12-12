@@ -33,7 +33,6 @@ class Page
             $translation->fromModel($translationModel);
             $this->addTranslation($translation);
         }
-
     }
 
     public function toModel()

@@ -69,7 +69,7 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
 
     protected function findAllQuery(array $filters, $pageIndex = 0, $pageSize = PHP_INT_MAX)
     {
-        $qb = $this->pageRepository->createQueryBuilder(self::ROOT_ALIAS)
+        $qb = $this->createQueryBuilder()
             ->setFirstResult($pageIndex * $pageSize)
             ->setMaxResults($pageSize);
 
@@ -95,6 +95,14 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
         $entity->fromModel($model);
 
         return $entity;
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function createQueryBuilder()
+    {
+        return $this->pageRepository->createQueryBuilder(self::ROOT_ALIAS);
     }
 
 }
