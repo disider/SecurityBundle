@@ -4,9 +4,7 @@ namespace Diside\SecurityBundle\Tests\Form\Processor;
 
 use Diside\SecurityBundle\Form\Data\ChangePasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor;
-use Diside\SecurityBundle\Security\LoggedUser;
-use Diside\SecurityBundle\Tests\Mock\DummyToken;
-use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Diside\SecurityComponent\Interactor\AbstractInteractor;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\InteractorRegister;
@@ -17,39 +15,20 @@ use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\User;
 use Mockery as m;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class ChangePasswordFormProcessorTest extends WebTestCase
+class ChangePasswordFormProcessorTest extends FormProcessorTestCase
 {
-    /** @var ChangePasswordFormProcessor */
-    private $processor;
 
-    /** @var FormInterface */
-    private $form;
-
-    /** @var InteractorFactory */
-    private $interactorFactory;
-
-    /** @var SecurityContextInterface */
-    private $securityContext;
-
-    protected function setUp()
-    {
-        $this->form = m::mock('Symfony\Component\Form\Form');
-        $this->form->shouldReceive('handleRequest');
-        $this->form->shouldReceive('setData');
-
-        $formFactory = m::mock('Symfony\Component\Form\FormFactoryInterface');
-        $formFactory->shouldReceive('create')
-            ->andReturn($this->form);
-
-        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
-
-        $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
-
+    protected function buildProcessor(
+        FormFactoryInterface $formFactory,
+        InteractorFactory $interactorFactory,
+        SecurityContextInterface $securityContext
+    ) {
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
         $encoder->shouldReceive('encodePassword');
 
@@ -57,12 +36,25 @@ class ChangePasswordFormProcessorTest extends WebTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($encoder);
 
-        $this->processor = new ChangePasswordFormProcessor(
+        return new ChangePasswordFormProcessor(
             $formFactory,
-            $this->interactorFactory,
-            $this->securityContext,
+            $interactorFactory,
+            $securityContext,
             $encoderFactory
         );
+    }
+
+    protected function buildValidData($object)
+    {
+        $user = $this->givenLoggedUser();
+        $data = new ChangePasswordFormData($user);
+
+        return $data;
+    }
+
+    protected function getFormName()
+    {
+        return 'change_password';
     }
 
     /**
@@ -80,10 +72,10 @@ class ChangePasswordFormProcessorTest extends WebTestCase
      */
     public function whenProcessingWithNoData_thenIsNotValid()
     {
-        $user = $this->givenUser();
+        $user = $this->givenLoggedUser();
         $this->givenInvalidData();
 
-        $request = $this->build();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request, $user->getId());
         $this->assertFalse($this->processor->hasErrors());
@@ -96,16 +88,12 @@ class ChangePasswordFormProcessorTest extends WebTestCase
     public function whenProcessingValidForm_thenHasNoErrors()
     {
         $user = $this->givenUser();
+        $this->givenLoggedUser($user);
 
-        $interactor = new ChangePasswordUserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor);
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
         $request = $this->givenValidData();
 
@@ -123,106 +111,15 @@ class ChangePasswordFormProcessorTest extends WebTestCase
      */
     public function whenProcessingValidFormButInteractorFails_thenHasErrors()
     {
-        $user = $this->givenUser();
-
-        $interactor = new ErrorInteractor('Undefined');
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor);
-
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::SAVE_USER);
         $request = $this->givenValidData();
+        $user = $this->givenLoggedUser();
 
         $this->processor->process($request, $user->getId());
 
         $this->assertTrue($this->processor->hasErrors());
 
         $errors = $this->processor->getErrors();
-        $this->assertThat($errors[0], $this->equalTo('Undefined'));
-    }
-
-    private function build()
-    {
-        $request = new Request(array(), array());
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenUser()
-    {
-        $user = new User(null, 'test@example.com', 'password', '');
-
-        $token = new DummyToken(new LoggedUser($user));
-
-        $this->securityContext
-            ->shouldReceive('isGranted')
-            ->andReturn(true);
-
-        $this->securityContext
-            ->shouldReceive('getToken')
-            ->once()
-            ->andReturn($token);
-
-        return $user;
-    }
-
-    private function givenValidData()
-    {
-        $user = $this->givenUser();
-        $data = new ChangePasswordFormData($user);
-
-        $this->givenValidForm($data);
-
-        return $this->givenPost($data);
-    }
-
-    private function givenInvalidData()
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(false);
-
-        return $this->givenPost(array());
-    }
-
-    private function givenPost($data)
-    {
-        $request = new Request(array(), array('change_password' => $data));
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenValidForm(ChangePasswordFormData $data)
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(true);
-
-        $this->form
-            ->shouldReceive('getData')
-            ->once()
-            ->andReturn($data);
-    }
-
-}
-
-class ChangePasswordUserInteractorMock extends AbstractInteractor
-{
-    /** @var User */
-    private $user;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function process(InteractorRequest $request, Presenter $presenter)
-    {
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
+        $this->assertThat($errors[0], $this->equalTo('Error'));
     }
 }

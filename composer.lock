@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/disider/SecurityComponent.git",
-                "reference": "3c1601e409299742c9e67d899ec4040f34024b3c"
+                "reference": "b6e693cab15e4252225f52a139614df14f754cc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/disider/SecurityComponent/zipball/3c1601e409299742c9e67d899ec4040f34024b3c",
-                "reference": "3c1601e409299742c9e67d899ec4040f34024b3c",
+                "url": "https://api.github.com/repos/disider/SecurityComponent/zipball/b6e693cab15e4252225f52a139614df14f754cc5",
+                "reference": "b6e693cab15e4252225f52a139614df14f754cc5",
                 "shasum": ""
             },
             "require": {
@@ -36,7 +36,7 @@
                 "source": "https://github.com/disider/SecurityComponent/tree/master",
                 "issues": "https://github.com/disider/SecurityComponent/issues"
             },
-            "time": "2014-12-12 16:41:30"
+            "time": "2014-12-12 18:20:50"
         }
     ],
     "packages-dev": [

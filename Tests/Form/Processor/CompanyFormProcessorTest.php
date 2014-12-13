@@ -4,9 +4,11 @@
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
 use Diside\SecurityBundle\Tests\Mock\CompanyInteractorMock;
+use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Mockery as m;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
@@ -18,41 +20,26 @@ use Diside\SecurityBundle\Form\Processor\CompanyFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 
-class CompanyFormProcessorTest extends WebTestCase
+class CompanyFormProcessorTest extends FormProcessorTestCase
 {
-    /** @var CompanyFormProcessor */
-    private $processor;
-
-    /** @var FormInterface */
-    private $form;
-
-    /** @var InteractorFactory */
-    private $interactorFactory;
-
-    /** @var SecurityContextInterface */
-    private $securityContext;
-
-    protected function setUp()
+    protected function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
     {
-        $this->form = m::mock('Symfony\Component\Form\Form');
-        $this->form->shouldReceive('handleRequest');
-        $this->form->shouldReceive('setData');
-
-        $button = m::mock('Symfony\Component\Form\SubmitButton');
-        $button->shouldReceive('isClicked');
-        $this->form->shouldReceive('get')->andReturn($button);
-        $this->form->shouldReceive('has');
-
-        $formFactory = m::mock('Symfony\Component\Form\FormFactoryInterface');
-        $formFactory->shouldReceive('create')
-            ->andReturn($this->form);
-
-        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
-
-        $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
-
-        $this->processor = new CompanyFormProcessor($formFactory, $this->interactorFactory, $this->securityContext);
+        return new CompanyFormProcessor($formFactory, $interactorFactory, $securityContext);
     }
+
+    protected function buildValidData($object)
+    {
+        $data = new CompanyFormData();
+        $data->setName('Acme');
+
+        return $data;
+    }
+
+    protected function getFormName()
+    {
+        return 'company';
+    }
+
 
     /**
      * @test
@@ -70,9 +57,7 @@ class CompanyFormProcessorTest extends WebTestCase
      */
     public function whenProcessingRequestAndCompanyIsAnonymous_thenThrow()
     {
-        $this->securityContext
-            ->shouldReceive('isGranted')
-            ->andReturn(false);
+        $this->givenNotAuthorized();
 
         $request = new Request();
 
@@ -87,7 +72,7 @@ class CompanyFormProcessorTest extends WebTestCase
         $this->givenLoggedSuperadmin();
         $this->givenInvalidData();
 
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request);
         $this->assertFalse($this->processor->hasErrors());
@@ -101,21 +86,13 @@ class CompanyFormProcessorTest extends WebTestCase
         $this->givenLoggedSuperadmin();
         $this->givenInvalidData();
 
-        $expect = $this->form->mockery_findExpectation('setData', array());
-        $expect->once();
+        $expect = $this->expectFormDataIsSet();
 
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request);
 
         $expect->verify();
-    }
-
-    private function buildRequest()
-    {
-        $request = new Request(array(), array());
-        $request->setMethod('POST');
-        return $request;
     }
 
     /**
@@ -124,11 +101,9 @@ class CompanyFormProcessorTest extends WebTestCase
     public function whenProcessingValidForm_thenHasNoErrors()
     {
         $company = $this->givenCompany();
-        $interactor = new CompanyInteractorMock($company);
+        $interactor = new InteractorMock($company, 'setCompany');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_COMPANY)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_COMPANY);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenValidData();
@@ -148,12 +123,9 @@ class CompanyFormProcessorTest extends WebTestCase
     public function whenProcessingExistingChecklist_thenSaveExistingChecklist()
     {
         $company = $this->givenCompany();
-        $interactor = new CompanyInteractorMock($company);
+        $interactor = new InteractorMock($company, 'setCompany');
 
-        $expect = $this->interactorFactory->shouldReceive('get')
-            ->once()
-            ->with(SecurityInteractorRegister::GET_COMPANY)
-            ->andReturn($interactor);
+        $expect = $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_COMPANY);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenInvalidData();
@@ -168,11 +140,7 @@ class CompanyFormProcessorTest extends WebTestCase
      */
     public function whenProcessingValidFormButInteractorFails_thenHasErrors()
     {
-        $interactor = new ErrorInteractor('Error');
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_COMPANY)
-            ->andReturn($interactor);
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::SAVE_COMPANY);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenValidData();
@@ -190,63 +158,4 @@ class CompanyFormProcessorTest extends WebTestCase
         $company = new Company(null, 'test@example.com', 'password', '');
         return $company;
     }
-
-    private function givenLoggedSuperadmin()
-    {
-        $user = new User(1, 'adam@example.com', 'password', 'salt');
-        $user->addRole(User::ROLE_SUPERADMIN);
-
-        $token = new DummyToken($user);
-
-        $this->securityContext
-            ->shouldReceive('isGranted')
-            ->andReturn(true);
-
-        $this->securityContext
-            ->shouldReceive('getToken')
-            ->once()
-            ->andReturn($token);
-    }
-
-    private function givenValidData()
-    {
-        $data = new CompanyFormData();
-        $data->setName('Acme');
-
-        $this->givenValidForm($data);
-
-        return $this->givenPostRequest($data);
-    }
-
-    private function givenInvalidData()
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(false);
-
-        return $this->givenPostRequest(array());
-    }
-
-    private function givenPostRequest($data)
-    {
-        $request = new Request(array(), array('company' => $data));
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenValidForm(CompanyFormData $data)
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(true);
-
-        $this->form
-            ->shouldReceive('getData')
-            ->once()
-            ->andReturn($data);
-    }
-
 }
