@@ -155,7 +155,6 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
 
     protected function givenCompany()
     {
-        $company = new Company(null, 'test@example.com', 'password', '');
-        return $company;
+        return new Company(null, 'test@example.com', 'password', '');
     }
 }
