@@ -10,6 +10,11 @@
             <generator strategy="AUTO"/>
         </id>
 
+        <field name="language" column="language" type="string" length="255"/>
+        <field name="title" column="title" type="string" length="255"/>
+        <field name="url" column="url" type="string" length="255"/>
+        <field name="content" column="content" type="text"/>
+
     </mapped-superclass>
 
 </doctrine-mapping>

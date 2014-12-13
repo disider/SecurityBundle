@@ -10,11 +10,16 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <!--<one-to-many field="translations" target-entity="PageTranslation" mapped-by="page">-->
-            <!--<cascade>-->
-                <!--<cascade-all/>-->
-            <!--</cascade>-->
-        <!--</one-to-many>-->
+        <field name="language" column="language" type="string" length="255"/>
+        <field name="title" column="title" type="string" length="255"/>
+        <field name="url" column="url" type="string" length="255"/>
+        <field name="content" column="content" type="text"/>
+
+        <one-to-many field="translations" target-entity="PageTranslation" mapped-by="page">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
 
     </entity>
 

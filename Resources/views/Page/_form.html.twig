@@ -9,7 +9,9 @@
 {{ form_errors(form) }}
 
 <form id="page" method="POST" action="{{ route }}" novalidate>
-    {#{{ form_row(form.name) }}#}
+    {{ form_row(form.url) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.content) }}
 
     <div class="form-actions">
         {{ form_widget(form.save) }}

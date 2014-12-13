@@ -502,6 +502,7 @@ class TestsTestDebugProjectContainer extends Container
             'security.logger.logger.class' => 'Diside\\SecurityComponent\\Logger\\Logger',
             'security.form.processor.company_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\CompanyFormProcessor',
             'security.form.processor.user_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\UserFormProcessor',
+            'security.form.processor.page_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\PageFormProcessor',
             'security.form.processor.category_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\CategoryFormProcessor',
             'security.form.processor.checklist_template_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\ChecklistTemplateFormProcessor',
             'security.form.processor.process_running_checklist_form_processor.class' => 'Diside\\SecurityBundle\\Form\\Processor\\ProcessRunningChecklistFormProcessor',
@@ -518,6 +519,9 @@ class TestsTestDebugProjectContainer extends Container
             ),
             'security.mailer.display_names' => array(
                 'no-reply' => 'NoReply',
+            ),
+            'security.locales' => array(
+                0 => 'it',
             ),
             'diside.security.builder.user_builder.class' => 'Diside\\SecurityBundle\\Builder\\UserBuilder',
             'diside.security.twig.icon_extension.class' => 'Diside\\SecurityBundle\\Twig\\IconExtension',
@@ -619,6 +623,7 @@ class TestsTestDebugProjectContainer extends Container
             'interactor_factory' => 'getInteractorFactoryService',
             'kernel' => 'getKernelService',
             'locale_listener' => 'getLocaleListenerService',
+            'page_form_processor' => 'getPageFormProcessorService',
             'paginator_subscriber' => 'getPaginatorSubscriberService',
             'property_accessor' => 'getPropertyAccessorService',
             'registration_form_processor' => 'getRegistrationFormProcessorService',
@@ -1997,6 +2002,19 @@ class TestsTestDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'page_form_processor' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Diside\SecurityBundle\Form\Processor\PageFormProcessor A Diside\SecurityBundle\Form\Processor\PageFormProcessor instance.
+     */
+    protected function getPageFormProcessorService()
+    {
+        return $this->services['page_form_processor'] = new \Diside\SecurityBundle\Form\Processor\PageFormProcessor($this->get('form.factory'), $this->get('interactor_factory'), $this->get('security.context'), 'en', array(0 => 'it'));
+    }
+
+    /**
      * Gets the 'paginator_subscriber' service.
      *
      * This service is shared.
@@ -2286,7 +2304,7 @@ class TestsTestDebugProjectContainer extends Container
         $n = new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($a, $f, new \Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy('migrate'), $i, 'main', $l, $m, array('check_path' => 'login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), NULL, $c, NULL);
         $n->setRememberMeServices($j);
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $n, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c, true), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '548b07c6ce6a4', NULL, $f), 6 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c), 7 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($h, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), NULL), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $b), 'main', NULL, $c), 2 => $k, 3 => $n, 4 => new \Symfony\Component\Security\Http\Firewall\RememberMeListener($a, $j, $f, NULL, $c, true), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '548c5f933f392', NULL, $f), 6 => new \Symfony\Component\Security\Http\Firewall\SwitchUserListener($a, $b, $this->get('security.user_checker'), 'main', $g, NULL, '_switch_user', 'ROLE_ALLOWED_TO_SWITCH', $c), 7 => new \Symfony\Component\Security\Http\Firewall\AccessListener($a, $g, $h, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $i, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $i, 'login', false), NULL, NULL, NULL));
     }
 
     /**
@@ -3572,7 +3590,7 @@ class TestsTestDebugProjectContainer extends Container
     {
         $a = $this->get('security.user_checker');
 
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('548b07c6ce6a4')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('diside.security.user_provider'), $a, 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\RememberMeAuthenticationProvider($a, 'ThisTokenIsNotSoSecretChangeIt', 'main'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('548c5f933f392')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 

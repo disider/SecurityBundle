@@ -24,12 +24,12 @@ class PageFormProcessorTest extends FormProcessorTestCase
 {
     protected function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
     {
-        return new PageFormProcessor($formFactory, $interactorFactory, $securityContext);
+        return new PageFormProcessor($formFactory, $interactorFactory, $securityContext, 'en', array('it'));
     }
 
     protected function buildValidData($object)
     {
-        $data = new PageFormData();
+        $data = new PageFormData($object);
 
         return $data;
     }
@@ -154,6 +154,6 @@ class PageFormProcessorTest extends FormProcessorTestCase
 
     protected function givenPage()
     {
-        return new Page(null, 'test@example.com', 'password', '');
+        return new Page(null, 'en', 'url', 'title', 'content');
     }
 }

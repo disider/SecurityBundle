@@ -18,6 +18,7 @@ class ServicesTest extends ServiceTestCase
         $this->assertService('request_reset_password_form_processor', 'Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor');
         $this->assertService('reset_password_form_processor', 'Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor');
         $this->assertService('change_password_form_processor', 'Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor');
+        $this->assertService('page_form_processor', 'Diside\SecurityBundle\Form\Processor\PageFormProcessor');
     }
 
     /**

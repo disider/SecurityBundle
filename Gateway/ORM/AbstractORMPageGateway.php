@@ -80,8 +80,8 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
     {
         $qb = $this->createQueryBuilder()
             ->leftJoin(self::ROOT_ALIAS . '.translations', 'translation')
-            ->where('translation.language = :language')
-            ->andWhere('translation.url = :url')
+            ->where(sprintf('(%s.language = :language AND %s.url = :url)', self::ROOT_ALIAS, self::ROOT_ALIAS))
+            ->orWhere('(translation.language = :language AND translation.url = :url)')
             ->setParameter('language', $language)
             ->setParameter('url', $url);
 

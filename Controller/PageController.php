@@ -46,7 +46,7 @@ class PageController extends BaseController
     }
 
     /**
-     * @Route("/content/{url}", name="show_page")
+     * @Route("/content/{url}", name="page_show")
      * @Template
      */
     public function showAction(Request $request, $url)

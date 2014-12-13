@@ -1,11 +1,13 @@
 actions:
     add_company: Add a company
+    add_page: Add a page
     add_user: Add a user
     back_to_list: Back to list
     close: Close
     delete: Delete
     edit: Edit
     edit_company: Edit company
+    edit_page: Edit page
     edit_user: Edit user
     exit_impersonate: Exit
     impersonate: Impersonate
@@ -53,6 +55,7 @@ flash:
 form:
     action: Action
     company: Company
+    content: Content
     current_password: Current password
     email: Email
     emails: Emails
@@ -66,6 +69,7 @@ form:
     save: Save
     save_and_close: Save and close
     status: Status
+    url: URL
     username: Email
 
 login:
@@ -83,6 +87,11 @@ menu:
 
 pages:
     title: Pages
+
+page:
+    delete: Delete "%page%"
+    edit: Edit "%page%"
+    show: Show "%page%"
 
 registration:
     check_email: Your registration has been successful. Please, check your email and activate your account.
@@ -119,6 +128,7 @@ sort:
     role: Role
     title: Title
     type: Type
+    url: URL
     user: User
 
 status:

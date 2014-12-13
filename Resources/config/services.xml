@@ -9,6 +9,7 @@
 
         <parameter key="security.form.processor.company_form_processor.class">Diside\SecurityBundle\Form\Processor\CompanyFormProcessor</parameter>
         <parameter key="security.form.processor.user_form_processor.class">Diside\SecurityBundle\Form\Processor\UserFormProcessor</parameter>
+        <parameter key="security.form.processor.page_form_processor.class">Diside\SecurityBundle\Form\Processor\PageFormProcessor</parameter>
         <parameter key="security.form.processor.category_form_processor.class">Diside\SecurityBundle\Form\Processor\CategoryFormProcessor</parameter>
         <parameter key="security.form.processor.checklist_template_form_processor.class">Diside\SecurityBundle\Form\Processor\ChecklistTemplateFormProcessor</parameter>
         <parameter key="security.form.processor.process_running_checklist_form_processor.class">Diside\SecurityBundle\Form\Processor\ProcessRunningChecklistFormProcessor</parameter>
@@ -32,6 +33,10 @@
             <parameter key="no-reply">%noreply_display_name%</parameter>
         </parameter>
 
+        <parameter key="security.locales" type="collection">
+            <parameter>it</parameter>
+        </parameter>
+
         <parameter key="diside.security.builder.user_builder.class">Diside\SecurityBundle\Builder\UserBuilder</parameter>
 
     </parameters>
@@ -49,6 +54,14 @@
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
+        </service>
+
+        <service id="page_form_processor" class="%security.form.processor.page_form_processor.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="interactor_factory"/>
+            <argument type="service" id="security.context"/>
+            <argument>%kernel.default_locale%</argument>
+            <argument>%security.locales%</argument>
         </service>
 
         <service id="user_form_processor" class="%security.form.processor.user_form_processor.class%">

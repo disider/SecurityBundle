@@ -466,6 +466,7 @@
     <parameter key="security.logger.logger.class">Diside\SecurityComponent\Logger\Logger</parameter>
     <parameter key="security.form.processor.company_form_processor.class">Diside\SecurityBundle\Form\Processor\CompanyFormProcessor</parameter>
     <parameter key="security.form.processor.user_form_processor.class">Diside\SecurityBundle\Form\Processor\UserFormProcessor</parameter>
+    <parameter key="security.form.processor.page_form_processor.class">Diside\SecurityBundle\Form\Processor\PageFormProcessor</parameter>
     <parameter key="security.form.processor.category_form_processor.class">Diside\SecurityBundle\Form\Processor\CategoryFormProcessor</parameter>
     <parameter key="security.form.processor.checklist_template_form_processor.class">Diside\SecurityBundle\Form\Processor\ChecklistTemplateFormProcessor</parameter>
     <parameter key="security.form.processor.process_running_checklist_form_processor.class">Diside\SecurityBundle\Form\Processor\ProcessRunningChecklistFormProcessor</parameter>
@@ -482,6 +483,9 @@
     </parameter>
     <parameter key="security.mailer.display_names" type="collection">
       <parameter key="no-reply">NoReply</parameter>
+    </parameter>
+    <parameter key="security.locales" type="collection">
+      <parameter>it</parameter>
     </parameter>
     <parameter key="diside.security.builder.user_builder.class">Diside\SecurityBundle\Builder\UserBuilder</parameter>
     <parameter key="diside.security.twig.icon_extension.class">Diside\SecurityBundle\Twig\IconExtension</parameter>
@@ -1428,7 +1432,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>548b07c6ce6a4</argument>
+            <argument>548c5f933f392</argument>
           </service>
         </argument>
       </argument>
@@ -1749,7 +1753,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>548b07c6ce6a4</argument>
+            <argument>548c5f933f392</argument>
             <argument>null</argument>
             <argument type="service" id="security.authentication.manager"/>
           </service>
@@ -2240,6 +2244,15 @@
       <argument type="service" id="form.factory"/>
       <argument type="service" id="interactor_factory"/>
       <argument type="service" id="security.context"/>
+    </service>
+    <service id="page_form_processor" class="Diside\SecurityBundle\Form\Processor\PageFormProcessor">
+      <argument type="service" id="form.factory"/>
+      <argument type="service" id="interactor_factory"/>
+      <argument type="service" id="security.context"/>
+      <argument>en</argument>
+      <argument type="collection">
+        <argument>it</argument>
+      </argument>
     </service>
     <service id="user_form_processor" class="Diside\SecurityBundle\Form\Processor\UserFormProcessor">
       <argument type="service" id="form.factory"/>

@@ -11,6 +11,7 @@ use Diside\SecurityComponent\Interactor\Request\GetPageByLanguageAndUrlRequest;
 use Diside\SecurityComponent\Interactor\Request\SavePageRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\Page;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
@@ -19,6 +20,21 @@ class PageFormProcessor extends BaseFormProcessor implements PagePresenter
 {
     /** @var Page */
     private $page;
+
+    /** @var string */
+    private $defaultLocale;
+
+    /** @var array */
+    private $availableLocales;
+
+    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext, $defaultLocale, array $availableLocales)
+    {
+        parent::__construct($formFactory, $interactorFactory, $securityContext);
+
+        $this->defaultLocale = $defaultLocale;
+        $this->availableLocales = $availableLocales;
+    }
+
 
     protected function buildFormData($id)
     {
@@ -59,12 +75,18 @@ class PageFormProcessor extends BaseFormProcessor implements PagePresenter
 
         $user = $this->getAuthenticatedUser();
 
-        return new SavePageRequest($user->getId(), $data->getId());
+        return new SavePageRequest($user->getId(),
+            $data->getId(),
+            $this->defaultLocale,
+            $data->getUrl(),
+            $data->getTitle(),
+            $data->getContent()
+        );
     }
 
     protected function buildForm()
     {
-        return new PageForm();
+        return new PageForm($this->availableLocales);
     }
 
     protected function getSaveInteractorName()

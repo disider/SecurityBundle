@@ -1,32 +1,27 @@
 Diside\SecurityBundle\Entity\Page:
-    privacy: []
-    terms: []
+    privacy:
+        language: en
+        url: privacy
+        title: Privacy
+        content: <paragraph(3)>
+
+    terms:
+        language: en
+        url: terms
+        title: Terms and conditions
+        content: <paragraph(3)>
 
 Diside\SecurityBundle\Entity\PageTranslation:
-    privacy_en:
-        page: @privacy
-        language: en
-        title: Privacy
-        url: privacy
-        text: <paragraphs(3)>
-
     privacy_it:
         page: @privacy
         language: it
         title: Privacy
         url: privacy
-        text: <paragraphs(3)>
-
-    terms_en:
-        page: @terms
-        language: en
-        title: Terms and conditions
-        url: terms
-        text: <paragraphs(3)>
+        content: <paragraph(3)>
 
     terms_it:
         page: @terms
         language: it
         title: Termini e condizioni
         url: termini
-        text: <paragraphs(3)>
+        content: <paragraph(3)>

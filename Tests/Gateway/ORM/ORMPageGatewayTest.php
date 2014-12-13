@@ -22,7 +22,7 @@ class ORMPageGatewayTest extends RepositoryTestCase
         $this->pageGateway = new ORMPageGateway($this->entityManager);
     }
 
-        /**
+    /**
      * @test
      */
     public function testFindOneById()
@@ -36,18 +36,35 @@ class ORMPageGatewayTest extends RepositoryTestCase
     /**
      * @test
      */
+    public function testFindOneByLanguageAndUrl()
+    {
+        $page = $this->givenPage('en', 'page');
+        $this->givenPageTranslation($page, 'it', 'pagina');
+
+        $page = $this->pageGateway->findOneByLanguageAndUrl('en', 'page');
+        $this->assertPage($page, 'en', 'page');
+        $this->assertPage($page, 'it', 'pagina');
+
+        $page = $this->pageGateway->findOneByLanguageAndUrl('it', 'pagina');
+        $this->assertPage($page, 'en', 'page');
+        $this->assertPage($page, 'it', 'pagina');
+    }
+
+    /**
+     * @test
+     */
     public function testFindAllPagination()
     {
         $this->givenPages(10);
 
         $filters = array();
 
-        $this->assertPage($filters, 0, 5, 5, 10);
-        $this->assertPage($filters, 1, 5, 5, 10);
-        $this->assertPage($filters, 2, 5, 0, 10);
+        $this->assertPages($filters, 0, 5, 5, 10);
+        $this->assertPages($filters, 1, 5, 5, 10);
+        $this->assertPages($filters, 2, 5, 0, 10);
     }
 
-    private function assertPage($filters, $pageIndex, $pageSize, $count, $total)
+    private function assertPages($filters, $pageIndex, $pageSize, $count, $total)
     {
         $pages = $this->pageGateway->findAll($filters, $pageIndex, $pageSize);
         $this->assertThat(count($pages), $this->equalTo($count));
@@ -57,18 +74,30 @@ class ORMPageGatewayTest extends RepositoryTestCase
     private function givenPages($number)
     {
         for($i = 0; $i != $number; ++$i)
-            $this->givenPage('en', 'Page ' . $i);
+            $this->givenPage('en', 'page' . $i, 'Page ' . $i);
     }
 
-    private function givenPage($language, $title)
+    private function givenPage($language, $url, $title = '')
     {
-        $page = new Page(null);
+        $page = new Page(null, $language, $url, $title, '');
 
-        $translation = new PageTranslation(null, $language, '', $title, '');
+        return $this->pageGateway->save($page);
+    }
+
+    private function givenPageTranslation(Page $page, $language, $url, $title = '')
+    {
+        $translation = new PageTranslation(null, $language, $url, $title, '');
 
         $page->addTranslation($translation);
 
-        return $this->pageGateway->save($page);
+        $this->pageGateway->save($page);
+    }
+
+    private function assertPage($page, $language, $url)
+    {
+        $this->assertInstanceOf('Diside\SecurityComponent\Model\Page', $page);
+        $this->assertTrue($page->hasTranslation($language));
+        $this->assertThat($page->getTranslation($language)->getUrl(), $this->equalTo($url));
     }
 
 }

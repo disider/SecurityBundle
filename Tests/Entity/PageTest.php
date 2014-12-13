@@ -14,8 +14,8 @@ class PageTest extends EntityTest
      */
     public function testConversion()
     {
-        $model = new Model(null);
-        $model->addTranslation(new PageTranslation(null, 'en', 'url', 'title', 'content'));
+        $model = new Model(null, 'en', 'url', 'title', 'content');
+        $model->addTranslation(new PageTranslation(null, 'it', 'it/url', 'titolo', 'contenuto'));
 
         $entity = new Entity();
         $entity->fromModel($model);
@@ -23,6 +23,10 @@ class PageTest extends EntityTest
         /** @var Model $converted */
         $converted = $entity->toModel();
 
+        $this->assertField($converted, $model, 'language');
+        $this->assertField($converted, $model, 'url');
+        $this->assertField($converted, $model, 'title');
+        $this->assertField($converted, $model, 'content');
         $this->assertThat($converted->countTranslations(), $this->equalTo(1));
     }
 }

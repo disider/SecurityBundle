@@ -12,19 +12,23 @@
             </tr>
             {% for page in pagination %}
                 <tr class="page">
-                    <td class="col-md-9">
-                        {#<a href="{{ path('page_edit', {'id': page.id }) }}"#}
-                           {#title="{{ 'page.edit'|trans({'%page%': page}) }}">{{ page }}</a>#}
+                    <td class="col-md-3">
+                        <a href="{{ path('page_edit', {'id': page.id }) }}"
+                           title="{{ 'page.edit'|trans({'%page%': page.translation(app.request.locale) }) }}">{{ page.translation(app.request.locale) }}</a>
+                    </td>
+                    <td class="col-md-6">
+                        <a href="{{ path('page_show', {'url': page.translation(app.request.locale).url}) }}"
+                           title="{{ 'page.show'|trans({'%page%': page.translation(app.request.locale) }) }}">{{ page.translation(app.request.locale).url }}</a>
                     </td>
 
                     <td class="col-md-3 text-right">
-                        {#<a class="edit btn btn-xs btn-default"#}
-                           {#href="{{ path('page_edit', {'id': page.id }) }}"#}
-                           {#title="{{ 'page.edit'|trans({'%page%': page }) }}">{{ icon('pencil') }}</a>#}
+                        <a class="edit btn btn-xs btn-default"
+                           href="{{ path('page_edit', {'id': page.id }) }}"
+                           title="{{ 'page.edit'|trans({'%page%': page }) }}">{{ icon('pencil') }}</a>
 
-                        {#<a class="delete btn btn-xs btn-default text-danger"#}
-                           {#href="{{ path('page_delete', {'id': page.id }) }}"#}
-                           {#title="{{ 'page.delete'|trans({'%page%': page }) }}">{{ icon('trash') }}</a>#}
+                        <a class="delete btn btn-xs btn-default text-danger"
+                           href="{{ path('page_delete', {'id': page.id }) }}"
+                           title="{{ 'page.delete'|trans({'%page%': page }) }}">{{ icon('trash') }}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -39,6 +43,6 @@
         {{ 'pages.empty_list'|trans }}
     </p>
 
-    {#<a class="create btn btn-primary"#}
-       {#href="{{ path('page_new') }}">{{ 'actions.add_page'|trans }}</a>#}
+    <a class="create btn btn-primary"
+       href="{{ path('page_new') }}">{{ 'actions.add_page'|trans }}</a>
 {% endblock main_content %}

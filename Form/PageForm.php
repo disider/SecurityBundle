@@ -10,6 +10,9 @@ class PageForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('url', 'text', array('label' => 'form.url'));
+        $builder->add('title', 'text', array('label' => 'form.title'));
+        $builder->add('content', 'textarea', array('label' => 'form.content'));
         $builder->add('save', 'submit', array('label' => 'form.save'));
         $builder->add('save_and_close', 'submit', array('label' => 'form.save_and_close'));
     }
