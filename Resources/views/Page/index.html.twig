@@ -1,0 +1,44 @@
+{% extends '::two-columns.html.twig' %}
+
+{% block main_content %}
+    <h1>{{ 'pages.title'|trans }}</h1>
+
+    {% if pagination|length > 0 %}
+        <table id="pages" class="table">
+            <tr>
+                <th>{{ 'sort.title'|trans }}</th>
+                <th>{{ 'sort.url'|trans }}</th>
+                <th>&nbsp;</th>
+            </tr>
+            {% for page in pagination %}
+                <tr class="page">
+                    <td class="col-md-9">
+                        {#<a href="{{ path('page_edit', {'id': page.id }) }}"#}
+                           {#title="{{ 'page.edit'|trans({'%page%': page}) }}">{{ page }}</a>#}
+                    </td>
+
+                    <td class="col-md-3 text-right">
+                        {#<a class="edit btn btn-xs btn-default"#}
+                           {#href="{{ path('page_edit', {'id': page.id }) }}"#}
+                           {#title="{{ 'page.edit'|trans({'%page%': page }) }}">{{ icon('pencil') }}</a>#}
+
+                        {#<a class="delete btn btn-xs btn-default text-danger"#}
+                           {#href="{{ path('page_delete', {'id': page.id }) }}"#}
+                           {#title="{{ 'page.delete'|trans({'%page%': page }) }}">{{ icon('trash') }}</a>#}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <nav class="pull-right">
+            {{ knp_pagination_render(pagination) }}
+        </nav>
+    {% endif %}
+
+    <p class="empty-list {% if pagination|length > 0 %}hidden{% endif %}">
+        {{ 'pages.empty_list'|trans }}
+    </p>
+
+    {#<a class="create btn btn-primary"#}
+       {#href="{{ path('page_new') }}">{{ 'actions.add_page'|trans }}</a>#}
+{% endblock main_content %}

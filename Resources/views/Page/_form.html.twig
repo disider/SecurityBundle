@@ -1,0 +1,21 @@
+{% if errors is not null %}
+    {% for error in errors %}
+        <div class="alert alert-danger">
+            {{ ('error.' ~ error)|trans }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{{ form_errors(form) }}
+
+<form id="page" method="POST" action="{{ route }}" novalidate>
+    {#{{ form_row(form.name) }}#}
+
+    <div class="form-actions">
+        {{ form_widget(form.save) }}
+        {{ form_widget(form.save_and_close) }}
+
+        {{ form_rest(form) }}
+    </div>
+
+</form>
