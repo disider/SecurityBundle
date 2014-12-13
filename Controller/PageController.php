@@ -5,7 +5,7 @@ namespace Diside\SecurityBundle\Controller;
 use AppBundle\Presenter\PagesPresenter;
 use Diside\SecurityBundle\Presenter\PagePresenter;
 use Diside\SecurityComponent\Interactor\Request\FindPagesRequest;
-use Diside\SecurityComponent\Interactor\Request\GetPageRequest;
+use Diside\SecurityComponent\Interactor\Request\GetPageByLanguageAndUrlRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -56,7 +56,7 @@ class PageController extends BaseController
 
         $user = $this->getAuthenticatedUser();
 
-        $request = new GetPageRequest($user ? $user->getId() : null, $locale, $url);
+        $request = new GetPageByLanguageAndUrlRequest($user ? $user->getId() : null, $locale, $url);
         $presenter = new PagePresenter();
 
         $interactor->process($request, $presenter);

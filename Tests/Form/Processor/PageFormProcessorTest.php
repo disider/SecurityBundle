@@ -30,7 +30,6 @@ class PageFormProcessorTest extends FormProcessorTestCase
     protected function buildValidData($object)
     {
         $data = new PageFormData();
-        $data->setName('Acme');
 
         return $data;
     }
@@ -120,7 +119,7 @@ class PageFormProcessorTest extends FormProcessorTestCase
     /**
      * @test
      */
-    public function whenProcessingExistingChecklist_thenSaveExistingChecklist()
+    public function whenProcessingExisting_thenSaveExisting()
     {
         $page = $this->givenPage();
         $interactor = new InteractorMock($page, 'setPage');

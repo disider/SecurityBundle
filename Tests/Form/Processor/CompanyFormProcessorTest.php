@@ -120,7 +120,7 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
     /**
      * @test
      */
-    public function whenProcessingExistingChecklist_thenSaveExistingChecklist()
+    public function whenProcessingExisting_thenSaveExisting()
     {
         $company = $this->givenCompany();
         $interactor = new InteractorMock($company, 'setCompany');
