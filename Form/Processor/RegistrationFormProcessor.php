@@ -57,7 +57,7 @@ class RegistrationFormProcessor implements UserPresenter
 
     public function process(Request $request)
     {
-        $this->form = $this->factory->create(new RegistrationForm());
+        $this->form = $this->factory->create($this->buildRegistrationForm());
 
         if ($request->isMethod('POST')) {
             $this->form->handleRequest($request);
@@ -126,5 +126,10 @@ class RegistrationFormProcessor implements UserPresenter
             $encoder->encodePassword($data->getPassword(), $salt),
             $salt);
         return $request;
+    }
+
+    protected function buildRegistrationForm()
+    {
+        return new RegistrationForm();
     }
 }
