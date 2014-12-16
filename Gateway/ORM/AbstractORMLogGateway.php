@@ -36,6 +36,7 @@ abstract class AbstractORMLogGateway extends AbstractORMBaseGateway implements L
         $this->logRepository = $this->getLogRepository();
         $this->userRepository = $this->getUserRepository();
     }
+
     public function save(LogModel $model)
     {
         $entity = $this->buildLog();
@@ -71,7 +72,7 @@ abstract class AbstractORMLogGateway extends AbstractORMBaseGateway implements L
     protected function convertEntity($entity)
     {
         if ($entity != null) {
-            return LogEntity::toModel($entity);
+            return $entity->toModel();
         }
 
         return null;

@@ -1,0 +1,7 @@
+{% extends '::two-columns.html.twig' %}
+
+{% block main_content %}
+    <h1>{{ 'actions.add_page'|trans }}</h1>
+
+    {% include 'DisideSecurityBundle:Page:_form.html.twig' with {'route' : path('page_new')}  %}
+{% endblock main_content %}

@@ -6,6 +6,7 @@ use Diside\SecurityBundle\DisideSecurityBundle;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ServiceTestCase extends \PHPUnit_Framework_TestCase

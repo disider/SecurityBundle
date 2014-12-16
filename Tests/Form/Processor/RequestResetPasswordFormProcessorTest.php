@@ -6,39 +6,36 @@ namespace Diside\SecurityBundle\Tests\Form\Processor;
 use Diside\SecurityBundle\Form\Data\RequestResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Mockery as m;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class RequestResetPasswordFormProcessorTest extends WebTestCase
+class RequestResetPasswordFormProcessorTest extends FormProcessorTestCase
 {
-    /** @var RequestResetPasswordFormProcessor */
-    private $processor;
+    protected function buildProcessor(
+        FormFactoryInterface $formFactory,
+        InteractorFactory $interactorFactory,
+        SecurityContextInterface $securityContext
+    ) {
+        return new RequestResetPasswordFormProcessor($formFactory, $interactorFactory);
+    }
 
-    /** @var FormInterface */
-    private $form;
-
-    /** @var InteractorFactory */
-    private $interactorFactory;
-
-    protected function setUp()
+    protected function buildValidData($object)
     {
-        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
+        return new RequestResetPasswordFormData($object);
+    }
 
-        $this->form = m::mock('Symfony\Component\Form\Form');
-        $this->form->shouldReceive('handleRequest');
-        $this->form->shouldReceive('setData');
-
-        $formFactory = m::mock('Symfony\Component\Form\FormFactoryInterface');
-        $formFactory->shouldReceive('create')
-            ->andReturn($this->form);
-
-        $this->processor = new RequestResetPasswordFormProcessor($formFactory, $this->interactorFactory);
+    protected function getFormName()
+    {
+        return 'request_reset_password';
     }
 
     /**
@@ -58,7 +55,7 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
     {
         $this->givenInvalidData();
 
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request);
         $this->assertFalse($this->processor->hasErrors());
@@ -70,11 +67,9 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
     public function whenProcessingValidForm_thenHasNoErrors()
     {
         $user = $this->givenUser();
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::REQUEST_RESET_PASSWORD)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::REQUEST_RESET_PASSWORD);
 
         $request = $this->givenValidData();
 
@@ -94,9 +89,7 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
     {
         $interactor = new ErrorInteractor('Undefined');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::REQUEST_RESET_PASSWORD)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::REQUEST_RESET_PASSWORD);
 
         $request = $this->givenValidData();
 
@@ -106,59 +99,6 @@ class RequestResetPasswordFormProcessorTest extends WebTestCase
 
         $errors = $this->processor->getErrors();
         $this->assertThat($errors[0], $this->equalTo('Undefined'));
-    }
-
-    private function buildRequest()
-    {
-        $request = new Request(array(), array());
-        $request->setMethod('POST');
-        return $request;
-    }
-
-    private function givenUser()
-    {
-        return new User(null, 'test@example.com', 'password', '');
-    }
-
-    private function givenValidData()
-    {
-        $user = $this->givenUser();
-        $data = new RequestResetPasswordFormData($user);
-
-        $this->givenValidForm($data);
-
-        return $this->givenPostRequest($data);
-    }
-
-    private function givenInvalidData()
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(false);
-
-        return $this->givenPostRequest(array());
-    }
-
-    private function givenPostRequest($data)
-    {
-        $request = new Request(array(), array('request_reset_password' => $data));
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenValidForm(RequestResetPasswordFormData $data)
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(true);
-
-        $this->form
-            ->shouldReceive('getData')
-            ->once()
-            ->andReturn($data);
     }
 
 }

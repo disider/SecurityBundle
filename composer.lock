@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "45d9f1fbf000a6349088e4cbf303c63e",
+    "hash": "0d08d2dbf6e93ff0bdd744379a72dabb",
     "packages": [
         {
             "name": "diside/security-component",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/disider/SecurityComponent.git",
-                "reference": "639bdbf3c5af1b41dfd9d3bba75df22eb3eb4db5"
+                "reference": "4966fc1281b3458b65961420b3468d436ae356e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/disider/SecurityComponent/zipball/639bdbf3c5af1b41dfd9d3bba75df22eb3eb4db5",
-                "reference": "639bdbf3c5af1b41dfd9d3bba75df22eb3eb4db5",
+                "url": "https://api.github.com/repos/disider/SecurityComponent/zipball/4966fc1281b3458b65961420b3468d436ae356e9",
+                "reference": "4966fc1281b3458b65961420b3468d436ae356e9",
                 "shasum": ""
             },
             "require": {
@@ -29,14 +29,14 @@
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "": "src/"
+                    "": "src"
                 }
             },
             "support": {
                 "source": "https://github.com/disider/SecurityComponent/tree/master",
                 "issues": "https://github.com/disider/SecurityComponent/issues"
             },
-            "time": "2014-12-08 10:13:05"
+            "time": "2014-12-13 15:26:45"
         }
     ],
     "packages-dev": [
@@ -966,16 +966,16 @@
         },
         {
             "name": "kriswallsmith/assetic",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "df991c124a2212371443b586a1be767500036dee"
+                "reference": "b20efe38845d20458702f97f3ff625d80805897b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/df991c124a2212371443b586a1be767500036dee",
-                "reference": "df991c124a2212371443b586a1be767500036dee",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/b20efe38845d20458702f97f3ff625d80805897b",
+                "reference": "b20efe38845d20458702f97f3ff625d80805897b",
                 "shasum": ""
             },
             "require": {
@@ -1036,7 +1036,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2014-10-14 14:45:32"
+            "time": "2014-12-12 05:04:05"
         },
         {
             "name": "mockery/mockery",
@@ -2180,16 +2180,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.5.8",
+            "version": "v2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "00da57005c9c76773670f4d958dd95e9f4ae72f6"
+                "reference": "d805dfd67950848ec0338b4acd75777b340977b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/00da57005c9c76773670f4d958dd95e9f4ae72f6",
-                "reference": "00da57005c9c76773670f4d958dd95e9f4ae72f6",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/d805dfd67950848ec0338b4acd75777b340977b7",
+                "reference": "d805dfd67950848ec0338b4acd75777b340977b7",
                 "shasum": ""
             },
             "require": {
@@ -2205,6 +2205,7 @@
                 "symfony/console": "self.version",
                 "symfony/css-selector": "self.version",
                 "symfony/debug": "self.version",
+                "symfony/debug-bundle": "self.version",
                 "symfony/dependency-injection": "self.version",
                 "symfony/doctrine-bridge": "self.version",
                 "symfony/dom-crawler": "self.version",
@@ -2239,23 +2240,25 @@
                 "symfony/twig-bridge": "self.version",
                 "symfony/twig-bundle": "self.version",
                 "symfony/validator": "self.version",
+                "symfony/var-dumper": "self.version",
                 "symfony/web-profiler-bundle": "self.version",
                 "symfony/yaml": "self.version"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "1.0.*",
                 "doctrine/dbal": "~2.2",
+                "doctrine/doctrine-bundle": "~1.2",
                 "doctrine/orm": "~2.2,>=2.2.3",
                 "egulias/email-validator": "~1.2",
                 "ircmaxell/password-compat": "~1.0",
-                "monolog/monolog": "~1.3",
+                "monolog/monolog": "~1.11",
                 "ocramius/proxy-manager": ">=0.3.1,<0.6-dev",
                 "propel/propel1": "~1.6"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.6-dev"
                 }
             },
             "autoload": {
@@ -2289,7 +2292,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-12-03 14:18:17"
+            "time": "2014-12-03 16:40:43"
         },
         {
             "name": "twig/extensions",
@@ -2410,5 +2413,7 @@
     "platform": {
         "php": ">=5.3.0"
     },
-    "platform-dev": []
+    "platform-dev": {
+        "php": ">=5.3.3"
+    }
 }

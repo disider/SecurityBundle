@@ -19,11 +19,11 @@
 
     <filter>
         <whitelist>
-            <directory suffix=".php">.</directory>
+            <directory suffix=".php">./</directory>
             <exclude>
-                <directory>Resources</directory>
-                <directory>Tests</directory>
-                <directory>vendor</directory>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
+                <directory>./vendor</directory>
             </exclude>
         </whitelist>
     </filter>

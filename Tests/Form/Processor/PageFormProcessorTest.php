@@ -3,7 +3,7 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
-use Diside\SecurityBundle\Tests\Mock\CompanyInteractorMock;
+use Diside\SecurityBundle\Tests\Mock\PageInteractorMock;
 use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Mockery as m;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
@@ -13,31 +13,30 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
-use Diside\SecurityComponent\Model\Company;
+use Diside\SecurityComponent\Model\Page;
 use Diside\SecurityComponent\Model\User;
-use Diside\SecurityBundle\Form\Data\CompanyFormData;
-use Diside\SecurityBundle\Form\Processor\CompanyFormProcessor;
+use Diside\SecurityBundle\Form\Data\PageFormData;
+use Diside\SecurityBundle\Form\Processor\PageFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 
-class CompanyFormProcessorTest extends FormProcessorTestCase
+class PageFormProcessorTest extends FormProcessorTestCase
 {
     protected function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
     {
-        return new CompanyFormProcessor($formFactory, $interactorFactory, $securityContext);
+        return new PageFormProcessor($formFactory, $interactorFactory, $securityContext, 'en', array('it'));
     }
 
     protected function buildValidData($object)
     {
-        $data = new CompanyFormData();
-        $data->setName('Acme');
+        $data = new PageFormData($object);
 
         return $data;
     }
 
     protected function getFormName()
     {
-        return 'company';
+        return 'page';
     }
 
 
@@ -46,7 +45,7 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
      */
     public function testConstructor()
     {
-        $this->assertNull($this->processor->getCompany());
+        $this->assertNull($this->processor->getPage());
         $this->assertNull($this->processor->getErrors());
         $this->assertFalse($this->processor->hasErrors());
     }
@@ -55,7 +54,7 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
      * @test
      * @expectedException \Diside\SecurityBundle\Exception\UnauthorizedException
      */
-    public function whenProcessingRequestAndCompanyIsAnonymous_thenThrow()
+    public function whenProcessingRequestAndPageIsAnonymous_thenThrow()
     {
         $this->givenNotAuthorized();
 
@@ -100,19 +99,19 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
      */
     public function whenProcessingValidForm_thenHasNoErrors()
     {
-        $company = $this->givenCompany();
-        $interactor = new InteractorMock($company, 'setCompany');
+        $page = $this->givenPage();
+        $interactor = new InteractorMock($page, 'setPage');
 
-        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_COMPANY);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_PAGE);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenValidData();
 
         $this->processor->process($request);
 
-        $company = $this->processor->getCompany();
+        $page = $this->processor->getPage();
 
-        $this->assertNotNull($company);
+        $this->assertNotNull($page);
         $this->assertFalse($this->processor->hasErrors());
         $this->assertTrue($this->processor->isValid());
     }
@@ -122,10 +121,10 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
      */
     public function whenProcessingExisting_thenSaveExisting()
     {
-        $company = $this->givenCompany();
-        $interactor = new InteractorMock($company, 'setCompany');
+        $page = $this->givenPage();
+        $interactor = new InteractorMock($page, 'setPage');
 
-        $expect = $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_COMPANY);
+        $expect = $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_PAGE);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenInvalidData();
@@ -140,7 +139,7 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
      */
     public function whenProcessingValidFormButInteractorFails_thenHasErrors()
     {
-        $this->givenErrorInteractorFor(SecurityInteractorRegister::SAVE_COMPANY);
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::SAVE_PAGE);
 
         $this->givenLoggedSuperadmin();
         $request = $this->givenValidData();
@@ -153,8 +152,8 @@ class CompanyFormProcessorTest extends FormProcessorTestCase
         $this->assertThat($errors[0], $this->equalTo('Error'));
     }
 
-    protected function givenCompany()
+    protected function givenPage()
     {
-        return new Company(null, 'test@example.com', 'password', '');
+        return new Page(null, 'en', 'url', 'title', 'content');
     }
 }

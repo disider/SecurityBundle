@@ -7,24 +7,25 @@ use Diside\SecurityComponent\Interactor\Presenter;
 use Diside\SecurityComponent\Interactor\Request;
 use Diside\SecurityComponent\Model\User;
 
-class UserInteractorMock extends AbstractInteractor
+class InteractorMock extends AbstractInteractor
 {
     private $request;
+    private $object;
+    private $method;
 
-    /** @var User */
-    private $user;
-
-    public function __construct(User $user)
+    public function __construct($object, $method)
     {
-        $this->user = $user;
+        $this->object = $object;
+        $this->method = $method;
     }
 
     public function process(Request $request, Presenter $presenter)
     {
         $this->request = $request;
 
-        /** @var UserPresenter $presenter */
-        $presenter->setUser($this->user);
+        $method = $this->method;
+
+        $presenter->$method($this->object);
     }
 
     public function getRequest()

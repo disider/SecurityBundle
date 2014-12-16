@@ -4,10 +4,13 @@
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
 use Diside\SecurityBundle\Builder\UserBuilder;
+use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Mockery as m;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -19,41 +22,14 @@ use Diside\SecurityBundle\Form\Processor\UserFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 
-class UserFormProcessorTest extends WebTestCase
+class UserFormProcessorTest extends FormProcessorTestCase
 {
-    /** @var UserFormProcessor */
-    private $processor;
-
-    /** @var FormInterface */
-    private $form;
-
-    /** @var InteractorFactory */
-    private $interactorFactory;
-
-    /** @var SecurityContextInterface */
-    private $securityContext;
-
     /** @var PasswordEncoderInterface */
     private $encoder;
 
-    protected function setUp()
+
+    protected function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
     {
-        $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
-
-        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
-
-        $this->form = m::mock('Symfony\Component\Form\Form');
-        $this->form->shouldReceive('handleRequest');
-        $this->form->shouldReceive('setData');
-        $button = m::mock('Symfony\Component\Form\SubmitButton');
-        $button->shouldReceive('isClicked');
-        $this->form->shouldReceive('get')->andReturn($button);
-        $this->form->shouldReceive('has');
-
-        $formFactory = m::mock('Symfony\Component\Form\FormFactoryInterface');
-        $formFactory->shouldReceive('create')
-            ->andReturn($this->form);
-
         $this->encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
 
         $encoderFactory = m::mock('Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface');
@@ -62,7 +38,22 @@ class UserFormProcessorTest extends WebTestCase
 
         $userBuilder = new UserBuilder();
 
-        $this->processor = new UserFormProcessor($formFactory, $this->interactorFactory, $this->securityContext, $encoderFactory, $userBuilder);
+        return new UserFormProcessor($formFactory, $interactorFactory, $securityContext, $encoderFactory, $userBuilder);
+    }
+
+    protected function buildValidData($object)
+    {
+        $data = new UserFormData($object, array());
+        $data->setPassword($object->getPassword());
+
+        $this->givenValidForm($data);
+
+        return $this->givenPostRequest($data);
+    }
+
+    protected function getFormName()
+    {
+        return 'user';
     }
 
     /**
@@ -81,9 +72,7 @@ class UserFormProcessorTest extends WebTestCase
      */
     public function whenProcessingRequestAndUserIsAnonymous_thenThrow()
     {
-        $this->securityContext
-            ->shouldReceive('isGranted')
-            ->andReturn(false);
+        $this->givenNotAuthorized();
 
         $request = new Request();
 
@@ -98,7 +87,7 @@ class UserFormProcessorTest extends WebTestCase
         $this->givenLoggedUser();
         $this->givenInvalidData();
 
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request);
         $this->assertFalse($this->processor->hasErrors());
@@ -112,10 +101,9 @@ class UserFormProcessorTest extends WebTestCase
         $this->givenLoggedUser();
         $this->givenInvalidData();
 
-        $expect = $this->form->mockery_findExpectation('setData', array());
-        $expect->once();
+        $expect = $this->expectFormDataIsSet();
 
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request);
 
@@ -131,11 +119,9 @@ class UserFormProcessorTest extends WebTestCase
         $this->givenEncodedPassword();
 
         $user = $this->givenUser();
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
         $request = $this->givenValidData($user);
 
@@ -153,25 +139,19 @@ class UserFormProcessorTest extends WebTestCase
      */
     public function whenProcessingExistingUser_thenSaveUser()
     {
-        $this->givenLoggedUser();
+        $admin = $this->givenAdmin();
+        $this->buildLoggedUser($admin);
+
         $user = $this->givenUser();
+        $user->setPassword('password');
         $this->givenEncodedPassword();
 
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $expect1 = $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor)
-            ->once()
-        ;
+        $expect1 = $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
+        $expect2 = $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
-        $expect2 = $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor)
-            ->once()
-        ;
-
-        $request = $this->givenValidData($user, 'password');
+        $request = $this->givenValidData($user);
 
         $this->processor->process($request, 1);
 
@@ -189,18 +169,10 @@ class UserFormProcessorTest extends WebTestCase
     {
         $user = $this->givenUser();
         $this->givenLoggedUser($user);
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor)
-        ;
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor)
-            ->once()
-        ;
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
         $request = $this->givenValidData($user);
 
@@ -217,24 +189,18 @@ class UserFormProcessorTest extends WebTestCase
     {
         $this->givenLoggedUser();
         $user = $this->givenUser();
+        $user->setPassword(null);
+
         $expect = $this->encoder->shouldReceive('encodePassword')
             ->never()
         ;
 
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor)
-        ;
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor)
-            ->once()
-        ;
-
-        $request = $this->givenValidData($user, null);
+        $request = $this->givenValidData($user);
 
         $this->processor->process($request, 1);
 
@@ -246,29 +212,23 @@ class UserFormProcessorTest extends WebTestCase
     /**
      * @test
      */
-    public function whenPasswordIsNotEmpty_thenProcessPassword()
+    public function whenPasswordIsNotEmptyAndUserIsDifferent_thenProcessPassword()
     {
-        $encodedPassword = '12345678';
-        $this->givenLoggedUser();
-        $user = $this->givenUser();
+        $admin = $this->givenAdmin();
+        $this->buildLoggedUser($admin);
 
+        $user = $this->givenUser();
+        $user->setPassword('password');
+
+        $encodedPassword = '12345678';
         $this->givenEncodedPassword($encodedPassword);
 
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor)
-        ;
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::SAVE_USER);
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor)
-            ->once()
-        ;
-
-        $request = $this->givenValidData($user, 'newpassword');
-
+        $request = $this->givenValidData($user);
 
         $this->processor->process($request, 1);
 
@@ -285,11 +245,7 @@ class UserFormProcessorTest extends WebTestCase
         $user = $this->givenUser();
         $this->givenEncodedPassword();
 
-        $interactor = new ErrorInteractor('Error');
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::SAVE_USER)
-            ->andReturn($interactor);
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::SAVE_USER);
 
         $request = $this->givenValidData($user);
 
@@ -301,87 +257,11 @@ class UserFormProcessorTest extends WebTestCase
         $this->assertThat($errors[0], $this->equalTo('Error'));
     }
 
-    private function givenUser()
-    {
-        return new User(2, 'test@example.com', 'password', '');
-    }
-
-    private function givenLoggedUser($user = null)
-    {
-        if(!$user) {
-            $user = new User(1, 'adam@example.com', 'password', 'salt');
-            $user->addRole(User::ROLE_ADMIN);
-        }
-
-        $loggedUser = new LoggedUser($user);
-
-        $token = new DummyToken($loggedUser);
-
-        $this->securityContext
-            ->shouldReceive('isGranted')
-            ->andReturn(true);
-
-        $this->securityContext
-            ->shouldReceive('getToken')
-            ->once()
-            ->andReturn($token);
-
-        return $loggedUser;
-    }
-
-    private function givenValidData(User $user, $password = null)
-    {
-        $data = new UserFormData($user, array());
-        $data->setPassword($password);
-
-        $this->givenValidForm($data);
-
-        return $this->givenPostRequest($data);
-    }
-
-    private function givenInvalidData()
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(false);
-
-        return $this->givenPostRequest(array());
-    }
-
-    private function givenPostRequest($data)
-    {
-        $request = new Request(array(), array('user' => $data));
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenValidForm(UserFormData $data)
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(true);
-
-        $this->form
-            ->shouldReceive('getData')
-            ->once()
-            ->andReturn($data);
-    }
-
     private function givenEncodedPassword($password = '1234')
     {
         $this->encoder->shouldReceive('encodePassword')
             ->andReturn($password)
         ;
-    }
-
-    private function buildRequest()
-    {
-        $request = new Request(array(), array());
-        $request->setMethod('POST');
-        return $request;
     }
 
 }

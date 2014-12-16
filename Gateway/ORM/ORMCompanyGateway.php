@@ -20,12 +20,4 @@ class ORMCompanyGateway extends AbstractORMCompanyGateway
     {
         return $this->getRepository('DisideSecurityBundle:Company');
     }
-
-    protected function convertEntity($entity)
-    {
-        if($entity == null)
-            return null;
-
-        return $entity->toModel();
-    }
 }

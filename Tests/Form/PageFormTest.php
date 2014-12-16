@@ -3,19 +3,19 @@
 namespace Diside\SecurityBundle\Tests\Form;
 
 use Mockery as m;
-use Diside\SecurityBundle\Form\CompanyForm;
+use Diside\SecurityBundle\Form\PageForm;
 use Diside\SecurityBundle\Tests\FormTestCase;
 
-class CompanyFormTest extends FormTestCase
+class PageFormTest extends FormTestCase
 {
-    /** @var CompanyForm */
+    /** @var PageForm */
     private $form;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->form = new CompanyForm();
+        $this->form = new PageForm('en', array('it'));
     }
 
     /**
@@ -24,7 +24,7 @@ class CompanyFormTest extends FormTestCase
     public function testConstructor()
     {
         $this->assertInstanceOf('Symfony\Component\Form\AbstractType', $this->form);
-        $this->assertThat($this->form->getName(), $this->equalTo('company'));
+        $this->assertThat($this->form->getName(), $this->equalTo('page'));
     }
 
     /**
@@ -34,7 +34,7 @@ class CompanyFormTest extends FormTestCase
     {
         $builder = m::mock('\Symfony\Component\Form\FormBuilder');
         $expect = $builder->shouldReceive('add')
-            ->times(3);
+            ->times(5);
 
         $this->form->buildForm($builder, array());
 
@@ -49,7 +49,7 @@ class CompanyFormTest extends FormTestCase
         /** @var \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver */
         $resolver = m::mock('Symfony\Component\OptionsResolver\OptionsResolverInterface');
         $expect = $resolver->shouldReceive('setDefaults')
-            ->with(array('data_class' => 'Diside\SecurityBundle\Form\Data\CompanyFormData'))
+            ->with(array('data_class' => 'Diside\SecurityBundle\Form\Data\PageFormData'))
             ->once();
 
         $this->form->setDefaultOptions($resolver);
@@ -61,16 +61,22 @@ class CompanyFormTest extends FormTestCase
      */
     public function whenSubmittingValidData_thenReturnValidRequest()
     {
-        $name = 'Acme';
+        $url = 'url';
+        $title = 'Title';
+        $content = 'Content';
         $formData = array(
-            'name' => $name
+            'url' => $url,
+            'title' => $title,
+            'content' => $content
         );
 
         $form = $this->factory->create($this->form);
 
         $form->submit($formData);
 
-        $company = $form->getData();
-        $this->assertThat($company->getName(), $this->equalTo($name));
+        $page = $form->getData();
+        $this->assertThat($page->getUrl(), $this->equalTo($url));
+        $this->assertThat($page->getContent(), $this->equalTo($content));
+        $this->assertThat($page->getTitle(), $this->equalTo($title));
     }
 }

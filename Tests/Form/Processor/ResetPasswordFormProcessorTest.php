@@ -6,38 +6,25 @@ namespace Diside\SecurityBundle\Tests\Form\Processor;
 use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
+use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
-use Mockery as m;
+use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\User;
+use Mockery as m;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class ResetPasswordFormProcessorTest extends WebTestCase
+class ResetPasswordFormProcessorTest extends FormProcessorTestCase
 {
-    /** @var ResetPasswordFormProcessor */
-    private $processor;
-
-    /** @var FormInterface */
-    private $form;
-
-    /** @var InteractorFactory */
-    private $interactorFactory;
-
-    protected function setUp()
-    {
-        $this->form = m::mock('Symfony\Component\Form\Form');
-        $this->form->shouldReceive('handleRequest');
-        $this->form->shouldReceive('setData');
-
-        $formFactory = m::mock('Symfony\Component\Form\FormFactoryInterface');
-        $formFactory->shouldReceive('create')
-            ->andReturn($this->form);
-
-        $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
-
+    protected function buildProcessor(
+        FormFactoryInterface $formFactory,
+        InteractorFactory $interactorFactory,
+        SecurityContextInterface $securityContext
+    ) {
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
         $encoder->shouldReceive('encodePassword');
 
@@ -45,8 +32,17 @@ class ResetPasswordFormProcessorTest extends WebTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($encoder);
 
+        return new ResetPasswordFormProcessor($formFactory, $interactorFactory, $encoderFactory);
+    }
 
-        $this->processor = new ResetPasswordFormProcessor($formFactory, $this->interactorFactory, $encoderFactory);
+    protected function buildValidData($object)
+    {
+        return new ResetPasswordFormData($user);
+    }
+
+    protected function getFormName()
+    {
+        return 'reset_password';
     }
 
     /**
@@ -67,13 +63,9 @@ class ResetPasswordFormProcessorTest extends WebTestCase
     {
         $this->givenInvalidData();
 
-        $interactor = new ErrorInteractor('Undefined');
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::GET_USER);
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor);
-
-        $request = $this->buildRequest();
+        $request = $this->givenPostRequest();
 
         $this->processor->process($request, '123');
     }
@@ -85,15 +77,11 @@ class ResetPasswordFormProcessorTest extends WebTestCase
     {
         $user = $this->givenUser();
 
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::RESET_PASSWORD)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::RESET_PASSWORD);
 
         $request = $this->givenValidData();
 
@@ -112,79 +100,17 @@ class ResetPasswordFormProcessorTest extends WebTestCase
     public function whenProcessingValidFormButResetInteractorFails_thenHasErrors()
     {
         $user = $this->givenUser();
-        $interactor = new UserInteractorMock($user);
+        $interactor = new InteractorMock($user, 'setUser');
 
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::GET_USER)
-            ->andReturn($interactor);
+        $this->expectInteractorFor($interactor, SecurityInteractorRegister::GET_USER);
 
-        $interactor = new ErrorInteractor('Undefined');
-
-        $this->interactorFactory->shouldReceive('get')
-            ->with(SecurityInteractorRegister::RESET_PASSWORD)
-            ->andReturn($interactor);
+        $this->givenErrorInteractorFor(SecurityInteractorRegister::RESET_PASSWORD);
 
         $request = $this->givenValidData();
 
         $this->processor->process($request, '123');
 
         $this->assertTrue($this->processor->hasErrors());
-
-        $errors = $this->processor->getErrors();
-        $this->assertThat($errors[0], $this->equalTo('Undefined'));
-    }
-
-    private function buildRequest()
-    {
-        $request = new Request(array(), array());
-        $request->setMethod('POST');
-        return $request;
-    }
-
-    private function givenUser()
-    {
-        return new User(null, 'test@example.com', 'password', '');
-    }
-
-    private function givenValidData()
-    {
-        $user = $this->givenUser();
-        $data = new ResetPasswordFormData($user);
-
-        $this->givenValidForm($data);
-
-        return $this->givenPost($data);
-    }
-
-    private function givenInvalidData()
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(false);
-
-        return $this->givenPost(array());
-    }
-
-    private function givenPost($data)
-    {
-        $request = new Request(array(), array('reset_password' => $data));
-        $request->setMethod('POST');
-
-        return $request;
-    }
-
-    private function givenValidForm(ResetPasswordFormData $data)
-    {
-        $this->form
-            ->shouldReceive('isValid')
-            ->once()
-            ->andReturn(true);
-
-        $this->form
-            ->shouldReceive('getData')
-            ->once()
-            ->andReturn($data);
     }
 
 }
