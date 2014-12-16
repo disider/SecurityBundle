@@ -22,14 +22,16 @@ use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 
 class PageFormProcessorTest extends FormProcessorTestCase
 {
+    private $locales = array('it');
+
     protected function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
     {
-        return new PageFormProcessor($formFactory, $interactorFactory, $securityContext, 'en', array('it'));
+        return new PageFormProcessor($formFactory, $interactorFactory, $securityContext, 'en', $this->locales);
     }
 
     protected function buildValidData($object)
     {
-        $data = new PageFormData($object);
+        $data = new PageFormData($this->locales, $object);
 
         return $data;
     }

@@ -36,6 +36,7 @@ class Page
      */
     public function fromModel($model)
     {
+        $this->id = $model->getId();
         $this->language = $model->getLanguage();
         $this->url = $model->getUrl();
         $this->title = $model->getTitle();
@@ -43,9 +44,11 @@ class Page
 
         /** @var PageTranslationModel $translationModel */
         foreach ($model->getTranslations() as $translationModel) {
-            $translation = new PageTranslation();
+            $translation = $this->hasTranslationId($translationModel->getId())
+                ? $this->getTranslationById($translationModel->getId())
+                : $this->buildTranslation();
+
             $translation->fromModel($translationModel);
-            $this->addTranslation($translation);
         }
     }
 
@@ -53,6 +56,7 @@ class Page
     {
         $model = new Model($this->id, $this->language, $this->url, $this->title, $this->content);
 
+        /** @var PageTranslation $translation */
         foreach ($this->getTranslations() as $translation) {
             $model->addTranslation($translation->toModel());
         }
@@ -60,15 +64,50 @@ class Page
         return $model;
     }
 
-    private function getTranslations()
+    public function getTranslations()
     {
         return $this->translations;
     }
 
-    private function addTranslation(PageTranslation $translation)
+    public function addTranslation(PageTranslation $translation)
     {
         $this->translations->add($translation);
         $translation->setPage($this);
+    }
+
+    /**
+     * @return PageTranslation
+     */
+    protected function buildTranslation()
+    {
+        $translation = new PageTranslation();
+        $this->addTranslation($translation);
+
+        return $translation;
+    }
+
+    private function hasTranslationId($id)
+    {
+        /** @var PageTranslation $translation */
+        foreach ($this->getTranslations() as $translation) {
+            if ($translation->getId() == $id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function getTranslationById($id)
+    {
+        /** @var PageTranslation $translation */
+        foreach ($this->getTranslations() as $translation) {
+            if ($translation->getId() == $id) {
+                return $translation;
+            }
+        }
+
+        return null;
     }
 
 }

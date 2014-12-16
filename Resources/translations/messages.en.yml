@@ -72,6 +72,11 @@ form:
     url: URL
     username: Email
 
+locale:
+    en: English
+    fr: French
+    it: Italian
+
 login:
     already_registered: Are you already registered?
     title: Login

@@ -5,3 +5,12 @@
 
     {% include 'DisideSecurityBundle:Page:_form.html.twig' with {'route' : path('page_edit', {'id': form.vars.data.id})} %}
 {% endblock main_content %}
+
+
+{%  block javascripts %}
+    {{ parent() }}
+
+    <script src="/bundles/disidesecurity/js/tinymce/tinymce.min.js""></script>
+    <script src="/bundles/disidesecurity/js/tinymce/jquery.tinymce.min.js""></script>
+
+{%  endblock javascripts %}

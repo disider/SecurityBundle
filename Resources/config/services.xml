@@ -33,9 +33,7 @@
             <parameter key="no-reply">%noreply_display_name%</parameter>
         </parameter>
 
-        <parameter key="security.locales" type="collection">
-            <parameter>it</parameter>
-        </parameter>
+        <parameter key="security.locales">%locales%</parameter>
 
         <parameter key="diside.security.builder.user_builder.class">Diside\SecurityBundle\Builder\UserBuilder</parameter>
 

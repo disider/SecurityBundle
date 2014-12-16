@@ -24,6 +24,21 @@ class PageTranslation
     /** @var string */
     protected $content;
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
     public function getPage()
     {
         return $this->page;
@@ -39,6 +54,7 @@ class PageTranslation
      */
     public function fromModel($model)
     {
+        $this->id = $model->getId();
         $this->language = $model->getLanguage();
         $this->url = $model->getUrl();
         $this->title = $model->getTitle();

@@ -3,7 +3,9 @@
 namespace Diside\SecurityBundle\Controller;
 
 use AppBundle\Presenter\PagesPresenter;
+use Diside\SecurityBundle\Form\Processor\PageFormProcessor;
 use Diside\SecurityBundle\Presenter\PagePresenter;
+use Diside\SecurityComponent\Interactor\Request\DeletePageRequest;
 use Diside\SecurityComponent\Interactor\Request\FindPagesRequest;
 use Diside\SecurityComponent\Interactor\Request\GetPageByLanguageAndUrlRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
@@ -104,7 +106,7 @@ class PageController extends BaseController
 
         $this->addFlash('success', 'flash.page.deleted', array('%page%' => $presenter->getPage()));
 
-        return $this->redirect($this->generateUrl('companies'));
+        return $this->redirect($this->generateUrl('pages'));
     }
 
     private function processForm(Request $request, $id = null)
@@ -118,7 +120,7 @@ class PageController extends BaseController
             $this->addFlash('success', $id ? 'flash.page.updated' : 'flash.page.created', array('%page%' => $processor->getPage()));
 
             if ($processor->isRedirectingTo(PageFormProcessor::REDIRECT_TO_LIST))
-                return $this->redirect($this->generateUrl('companies'));
+                return $this->redirect($this->generateUrl('pages'));
 
             return $this->redirect($this->generateUrl('page_edit', array(
                     'id' => $processor->getPage()->getId())
