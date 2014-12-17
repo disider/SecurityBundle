@@ -8,6 +8,7 @@ parameters:
     database_user:
     database_password:
     locale: en
+    locales: [en, it, fr]
     secret: ThisTokenIsNotSoSecretChangeIt
 
     noreply_display_name: NoReply
