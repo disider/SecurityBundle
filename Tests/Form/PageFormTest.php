@@ -2,9 +2,11 @@
 
 namespace Diside\SecurityBundle\Tests\Form;
 
-use Mockery as m;
+use Diside\SecurityBundle\Form\Data\PageFormData;
 use Diside\SecurityBundle\Form\PageForm;
 use Diside\SecurityBundle\Tests\FormTestCase;
+use Mockery as m;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PageFormTest extends FormTestCase
 {
@@ -15,7 +17,7 @@ class PageFormTest extends FormTestCase
     {
         parent::setUp();
 
-        $this->form = new PageForm('en', array('it'));
+        $this->form = new PageForm(array('it'));
     }
 
     /**
@@ -30,11 +32,11 @@ class PageFormTest extends FormTestCase
     /**
      * @test
      */
-    public function whenBuildingForm_thenFormHasTitle()
+    public function whenBuildingForm_thenFormHasFields()
     {
         $builder = m::mock('\Symfony\Component\Form\FormBuilder');
         $expect = $builder->shouldReceive('add')
-            ->times(5);
+            ->times(6);
 
         $this->form->buildForm($builder, array());
 
@@ -49,7 +51,12 @@ class PageFormTest extends FormTestCase
         /** @var \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver */
         $resolver = m::mock('Symfony\Component\OptionsResolver\OptionsResolverInterface');
         $expect = $resolver->shouldReceive('setDefaults')
-            ->with(array('data_class' => 'Diside\SecurityBundle\Form\Data\PageFormData'))
+            ->with(
+                array(
+                    'data_class' => 'Diside\SecurityBundle\Form\Data\PageFormData',
+                    'locales' => array()
+                )
+            )
             ->once();
 
         $this->form->setDefaultOptions($resolver);
@@ -61,22 +68,33 @@ class PageFormTest extends FormTestCase
      */
     public function whenSubmittingValidData_thenReturnValidRequest()
     {
-        $url = 'url';
-        $title = 'Title';
-        $content = 'Content';
         $formData = array(
-            'url' => $url,
-            'title' => $title,
-            'content' => $content
+            'url' => 'title',
+            'title' => 'Title',
+            'content' => 'Content',
+            'translations' => array(
+                'it' => array(
+                    'language' => 'it',
+                    'url' => 'titolo',
+                    'title' => 'Titolo',
+                    'content' => 'Contenuto'
+                )
+            )
         );
 
         $form = $this->factory->create($this->form);
 
         $form->submit($formData);
 
+        /** @var PageFormData $page */
         $page = $form->getData();
-        $this->assertThat($page->getUrl(), $this->equalTo($url));
-        $this->assertThat($page->getContent(), $this->equalTo($content));
-        $this->assertThat($page->getTitle(), $this->equalTo($title));
+        $this->assertThat($page->getUrl(), $this->equalTo('title'));
+        $this->assertThat($page->getTitle(), $this->equalTo('Title'));
+        $this->assertThat($page->getContent(), $this->equalTo('Content'));
+
+        $translations = $page->getTranslations();
+        $this->assertThat($translations['it']->getUrl(), $this->equalTo('titolo'));
+        $this->assertThat($translations['it']->getTitle(), $this->equalTo('Titolo'));
+        $this->assertThat($translations['it']->getContent(), $this->equalTo('Contenuto'));
     }
 }

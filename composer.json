@@ -11,7 +11,8 @@
   ],
   "require": {
     "php": ">=5.3.0",
-    "diside/security-component": "dev-master"
+    "diside/security-component": "dev-master",
+    "stfalcon/tinymce-bundle": "dev-master"
   },
   "require-dev": {
     "php": ">=5.3.3",

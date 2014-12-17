@@ -2,6 +2,7 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Form\Data\PageTranslationFormData;
 use Diside\SecurityBundle\Form\PageForm;
 use Diside\SecurityBundle\Form\Data\PageFormData;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
@@ -52,10 +53,15 @@ class PageFormProcessor extends BaseFormProcessor implements PagePresenter
 
             $page = $this->getPage();
 
-            return new PageFormData($page);
+            $data = new PageFormData($page);
+            $data->setPage($page);
         } else {
-            return new PageFormData();
+            $data = new PageFormData();
         }
+
+        $data->setAvailableLocales($this->availableLocales);
+
+        return $data;
     }
 
     public function getPage()
@@ -75,13 +81,25 @@ class PageFormProcessor extends BaseFormProcessor implements PagePresenter
 
         $user = $this->getAuthenticatedUser();
 
-        return new SavePageRequest($user->getId(),
+        $request = new SavePageRequest($user->getId(),
             $data->getId(),
             $this->defaultLocale,
             $data->getUrl(),
             $data->getTitle(),
             $data->getContent()
         );
+
+        /** @var PageTranslationFormData $translation */
+        foreach($data->getTranslations() as $language => $translation) {
+            $request->addTranslation(
+                $translation->getId(),
+                $language,
+                $translation->getUrl(),
+                $translation->getTitle(),
+                $translation->getContent());
+        }
+
+        return $request;
     }
 
     protected function buildForm()

@@ -5,3 +5,12 @@
 
     {% include 'DisideSecurityBundle:Page:_form.html.twig' with {'route' : path('page_new')}  %}
 {% endblock main_content %}
+
+
+{%  block javascripts %}
+    {{ parent() }}
+
+    <script src="/bundles/disidesecurity/js/ckeditor/ckeditor.js""></script>
+    <script src="/bundles/disidesecurity/js/ckeditor/adapters/jquery.js""></script>
+
+{%  endblock javascripts %}

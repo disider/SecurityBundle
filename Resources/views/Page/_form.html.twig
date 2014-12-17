@@ -11,7 +11,29 @@
 <form id="page" method="POST" action="{{ route }}" novalidate>
     {{ form_row(form.url) }}
     {{ form_row(form.title) }}
-    {{ form_row(form.content) }}
+    {{ form_row(form.content, {attr: {class: 'editor'}}) }}
+
+    <div role="tabpanel">
+
+        <ul class="nav nav-tabs" role="tablist">
+            {% for locale, translationForm in form.translations %}
+                <li role="presentation" class="{{ loop.index0 == 0 ? 'active' : ''}}">
+                    <a href="#{{ locale }}" role="tab" data-toggle="tab">{{ ('locale.' ~ locale )|trans }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="tab-content">
+        {% for locale, translationForm in form.translations %}
+                <div role="tabpanel" class="tab-pane {{ loop.index0 == 0 ? 'active' : ''}}" id="{{ locale }}">
+                    {{ form_row(translationForm.url) }}
+                    {{ form_row(translationForm.title) }}
+                    {{ form_row(translationForm.content, {attr: {class: 'editor'}}) }}
+                </div>
+        {% endfor %}
+        </div>
+
+    </div>
 
     <div class="form-actions">
         {{ form_widget(form.save) }}
@@ -21,3 +43,12 @@
     </div>
 
 </form>
+
+<script>
+    $(function() {
+        $('.editor').tinymce({
+            theme: 'modern',
+            menubar: false
+        });
+    });
+</script>
