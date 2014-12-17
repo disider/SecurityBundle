@@ -16,7 +16,7 @@ class RegistrationFormData
     private $email;
 
     /**
-     * Assert\NotBlank(message="error.empty_password")
+     * @Assert\NotBlank(message="error.empty_password")
      * @var string
      */
     private $password;
