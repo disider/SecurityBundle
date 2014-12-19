@@ -47,7 +47,7 @@ class RequestResetPasswordFormProcessor implements UserPresenter
 
     public function process(Request $request)
     {
-        $this->form = $this->factory->create(new RequestResetPasswordForm());
+        $this->form = $this->factory->create($this->buildRequestResetPasswordForm());
 
         if ($request->isMethod('POST')) {
             $this->form->handleRequest($request);
@@ -95,6 +95,11 @@ class RequestResetPasswordFormProcessor implements UserPresenter
     public function setUser(User $user)
     {
         $this->user = $user;
+    }
+
+    protected function buildRequestResetPasswordForm()
+    {
+        return new RequestResetPasswordForm();
     }
 
     private function buildRequest(RequestResetPasswordFormData $data)
