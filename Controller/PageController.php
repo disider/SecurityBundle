@@ -2,9 +2,9 @@
 
 namespace Diside\SecurityBundle\Controller;
 
-use AppBundle\Presenter\PagesPresenter;
 use Diside\SecurityBundle\Form\Processor\PageFormProcessor;
 use Diside\SecurityBundle\Presenter\PagePresenter;
+use Diside\SecurityBundle\Presenter\PagesPresenter;
 use Diside\SecurityComponent\Interactor\Request\DeletePageRequest;
 use Diside\SecurityComponent\Interactor\Request\FindPagesRequest;
 use Diside\SecurityComponent\Interactor\Request\GetPageByLanguageAndUrlRequest;
@@ -122,9 +122,9 @@ class PageController extends BaseController
             if ($processor->isRedirectingTo(PageFormProcessor::REDIRECT_TO_LIST))
                 return $this->redirect($this->generateUrl('pages'));
 
-            return $this->redirect($this->generateUrl('page_edit', array(
-                    'id' => $processor->getPage()->getId())
-            ));
+//            return $this->redirect($this->generateUrl('page_edit', array(
+//                    'id' => $processor->getPage()->getId())
+//            ));
         }
 
         $form = $processor->getForm();

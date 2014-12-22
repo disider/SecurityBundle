@@ -10,14 +10,14 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="language" column="language" type="string" length="255"/>
+        <field name="locale" column="locale" type="string" length="255"/>
         <field name="title" column="title" type="string" length="255"/>
         <field name="url" column="url" type="string" length="255"/>
         <field name="content" column="content" type="text"/>
 
-        <one-to-many field="translations" target-entity="PageTranslation" mapped-by="page">
+        <one-to-many field="translations" target-entity="PageTranslation" mapped-by="page" orphan-removal="true">
             <cascade>
-                <cascade-all/>
+                <cascade-persist/>
             </cascade>
         </one-to-many>
 

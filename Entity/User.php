@@ -2,22 +2,31 @@
 
 namespace Diside\SecurityBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Diside\SecurityComponent\Helper\TokenGenerator;
 use Diside\SecurityComponent\Model\User as Model;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class User
 {
     /** @var int */
     protected $id;
 
-    /** @var string */
+    /**
+     * @Assert\NotBlank(message="error.empty_email")
+     * @Assert\Email(message="error.wrong_email")
+     * @var string
+     */
     protected $email;
 
     /** @var string */
     protected $salt;
 
-    /** @var string */
+    /**
+     * Assert\NotBlank(message="error.empty_password")
+     * @var string
+     */
     protected $password;
 
     /** @var bool */
@@ -30,13 +39,14 @@ class User
     protected $company;
 
     /** @var string */
-    private $registrationToken;
+    protected $registrationToken;
 
     /** @var string */
-    private $resetPasswordToken;
+    protected $resetPasswordToken;
 
     public function __construct()
     {
+        $this->salt = TokenGenerator::generateToken();
     }
 
     public function setId($id)
@@ -119,14 +129,9 @@ class User
         return $this->company;
     }
 
-    public function setCompany($company)
+    public function setCompany(Company $company = null)
     {
         $this->company = $company;
-    }
-
-    public function getCompanyId()
-    {
-        return $this->hasCompany() ? $this->getCompany()->getId() : null;
     }
 
     public function setRegistrationToken($token)
@@ -156,8 +161,9 @@ class User
     public static function toModels($entities)
     {
         $models = array();
-        foreach ($entities as $entity)
+        foreach ($entities as $entity) {
             $models[] = self::toModel($entity);
+        }
 
         return $models;
     }
@@ -170,14 +176,16 @@ class User
         $model->setRegistrationToken($this->getRegistrationToken());
         $model->setResetPasswordToken($this->getResetPasswordToken());
 
-        if($this->hasCompany())
+        if ($this->hasCompany()) {
             $model->setCompany($this->getCompany()->toModel());
+        }
 
         return $model;
     }
 
-    public function fromModel($model, $company)
+    public function fromModel($model)
     {
+        $this->setId($model->getId());
         $this->setEmail($model->getEmail());
         $this->setPassword($model->getPassword());
         $this->setSalt($model->getSalt());
@@ -185,8 +193,23 @@ class User
         $this->setRoles($model->getRoles());
         $this->setRegistrationToken($model->getRegistrationToken());
         $this->setResetPasswordToken($model->getResetPasswordToken());
-        $this->setCompany($company);
+
+        if ($model->getCompany() != null) {
+            $company = new Company();
+            $company->fromModel($model->getCompany());
+            $this->setCompany($company);
+        }
     }
 
-
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if ($this->getId() == null && $this->getPassword() == null) {
+            $context->buildViolation('error.empty_password')
+                ->atPath('password')
+                ->addViolation();
+        }
+    }
 }

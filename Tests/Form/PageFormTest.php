@@ -2,6 +2,7 @@
 
 namespace Diside\SecurityBundle\Tests\Form;
 
+use Diside\SecurityBundle\Entity\Page;
 use Diside\SecurityBundle\Form\Data\PageFormData;
 use Diside\SecurityBundle\Form\PageForm;
 use Diside\SecurityBundle\Tests\FormTestCase;
@@ -17,7 +18,15 @@ class PageFormTest extends FormTestCase
     {
         parent::setUp();
 
-        $this->form = new PageForm(array('it'));
+        $entityFactory = m::mock('Diside\SecurityBundle\Factory\EntityFactory');
+        $entityFactory->shouldReceive('getClass')
+            ->with('page')
+            ->andReturn('Diside\SecurityBundle\Entity\Page');
+        $entityFactory->shouldReceive('getClass')
+            ->with('page_translation')
+            ->andReturn('Diside\SecurityBundle\Entity\PageTranslation');
+
+        $this->form = new PageForm(array('it'), $entityFactory);
     }
 
     /**
@@ -53,8 +62,7 @@ class PageFormTest extends FormTestCase
         $expect = $resolver->shouldReceive('setDefaults')
             ->with(
                 array(
-                    'data_class' => 'Diside\SecurityBundle\Form\Data\PageFormData',
-                    'locales' => array()
+                    'data_class' => 'Diside\SecurityBundle\Entity\Page',
                 )
             )
             ->once();
@@ -86,15 +94,17 @@ class PageFormTest extends FormTestCase
 
         $form->submit($formData);
 
-        /** @var PageFormData $page */
+        /** @var Page $page */
         $page = $form->getData();
         $this->assertThat($page->getUrl(), $this->equalTo('title'));
         $this->assertThat($page->getTitle(), $this->equalTo('Title'));
         $this->assertThat($page->getContent(), $this->equalTo('Content'));
 
         $translations = $page->getTranslations();
-        $this->assertThat($translations['it']->getUrl(), $this->equalTo('titolo'));
-        $this->assertThat($translations['it']->getTitle(), $this->equalTo('Titolo'));
-        $this->assertThat($translations['it']->getContent(), $this->equalTo('Contenuto'));
+        $translation = $translations[0];
+
+        $this->assertThat($translation->getUrl(), $this->equalTo('titolo'));
+        $this->assertThat($translation->getTitle(), $this->equalTo('Titolo'));
+        $this->assertThat($translation->getContent(), $this->equalTo('Contenuto'));
     }
 }

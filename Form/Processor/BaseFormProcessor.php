@@ -3,6 +3,9 @@
 namespace Diside\SecurityBundle\Form\Processor;
 
 use Diside\SecurityBundle\Exception\UnauthorizedException;
+use Diside\SecurityBundle\Factory\EntityFactory;
+use Diside\SecurityBundle\Factory\RequestFactory;
+use Diside\SecurityBundle\Security\PermissionChecker;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter;
 use Diside\SecurityComponent\Model\User;
@@ -37,11 +40,29 @@ abstract class BaseFormProcessor implements Presenter
     /** @var bool */
     private $isValid = false;
 
-    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext)
-    {
+    /** @var EntityFactory */
+    private $entityFactory;
+
+    /** @var RequestFactory */
+    private $requestFactory;
+
+    /** @var PermissionChecker */
+    private $permissionChecker;
+
+    public function __construct(
+        FormFactoryInterface $formFactory,
+        InteractorFactory $interactorFactory,
+        SecurityContextInterface $securityContext,
+        EntityFactory $entityFactory,
+        RequestFactory $requestFactory,
+        PermissionChecker $permissionChecker
+    ) {
         $this->interactorFactory = $interactorFactory;
         $this->securityContext = $securityContext;
         $this->formFactory = $formFactory;
+        $this->entityFactory = $entityFactory;
+        $this->requestFactory = $requestFactory;
+        $this->permissionChecker = $permissionChecker;
     }
 
     protected abstract function getSaveInteractorName();
@@ -69,8 +90,9 @@ abstract class BaseFormProcessor implements Presenter
 
     public function process(Request $request, $id = null)
     {
-        if (!$this->isUserAuthenticated())
+        if (!$this->isUserAuthenticated()) {
             throw new UnauthorizedException;
+        }
 
         $formData = $this->buildFormData($id);
 
@@ -150,8 +172,9 @@ abstract class BaseFormProcessor implements Presenter
 
     protected function isButtonClicked($buttonName)
     {
-        if (!$this->form->has($buttonName))
+        if (!$this->form->has($buttonName)) {
             return false;
+        }
 
         return $this->form->get($buttonName)->isClicked();
     }
@@ -159,5 +182,30 @@ abstract class BaseFormProcessor implements Presenter
     protected function getFormData()
     {
         return $this->form->getData();
+    }
+
+    protected function createEntity($name, $model = null)
+    {
+        return $this->entityFactory->create($name, $model);
+    }
+
+    protected function getEntityClass($name)
+    {
+        return $this->entityFactory->getClass($name);
+    }
+
+    protected function checkPermission($permission, $object = null)
+    {
+        return $this->permissionChecker->check($permission, $object);
+    }
+
+    protected function createRequest($name, $data, array $params = array())
+    {
+        return $this->requestFactory->create($name, $data, $params);
+    }
+
+    protected function getEntityFactory()
+    {
+        return $this->entityFactory;
     }
 }

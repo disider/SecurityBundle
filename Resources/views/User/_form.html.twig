@@ -32,7 +32,12 @@
             {% if form.company is defined %}
                 {{ form_row(form.company) }}
             {% else %}
-                {{ form_row(form.company_id) }}
+                <div class="form-group">
+                    <label class="form-label">{{ 'form.company'|trans }}</label>
+                    <div>
+                        {{ form.vars.data.company }}
+                    </div>
+                </div>
             {% endif %}
 
             {{ form_row(form.email) }}

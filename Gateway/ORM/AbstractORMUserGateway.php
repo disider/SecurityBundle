@@ -149,7 +149,8 @@ abstract class AbstractORMUserGateway extends AbstractORMBaseGateway implements 
     {
         $company = $this->getCompanyRepository()->findOneById($model->getCompanyId());
 
-        $entity->fromModel($model, $company);
+        $entity->fromModel($model);
+        $entity->setCompany($company);
 
         return $entity;
     }

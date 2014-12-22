@@ -2,9 +2,11 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Diside\SecurityBundle\Builder\UserBuilder;
+use Diside\SecurityBundle\Factory\EntityFactory;
+use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Form\Data\RegistrationFormData;
 use Diside\SecurityBundle\Form\RegistrationForm;
+use Diside\SecurityBundle\Presenter\BasePresenter;
 use Diside\SecurityComponent\Helper\TokenGenerator;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
@@ -17,13 +19,10 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class RegistrationFormProcessor implements UserPresenter
+class RegistrationFormProcessor extends BasePresenter implements UserPresenter
 {
     /** @var bool */
     private $isValid = false;
-
-    /** @var array */
-    private $errors;
 
     /** @var RegistrationForm */
     private $form;
@@ -35,19 +34,24 @@ class RegistrationFormProcessor implements UserPresenter
     private $user;
 
     /** @var FormFactoryInterface */
-    private $factory;
+    private $formFactory;
 
-    /** @var EncoderFactoryInterface */
-    private $encoderFactory;
-    /** @var UserBuilder */
-    private $userBuilder;
+    /** @var EntityFactory */
+    private $entityFactory;
 
-    public function __construct(FormFactoryInterface $factory, InteractorFactory $interactorFactory, EncoderFactoryInterface $encoderFactory, UserBuilder $userBuilder)
-    {
+    /** @var RequestFactory */
+    private $requestFactory;
+
+    public function __construct(
+        FormFactoryInterface $factory,
+        InteractorFactory $interactorFactory,
+        EntityFactory $entityFactory,
+        RequestFactory $requestFactory
+    ) {
         $this->interactorFactory = $interactorFactory;
-        $this->factory = $factory;
-        $this->encoderFactory = $encoderFactory;
-        $this->userBuilder = $userBuilder;
+        $this->formFactory = $factory;
+        $this->entityFactory = $entityFactory;
+        $this->requestFactory = $requestFactory;
     }
 
     public function getForm()
@@ -57,13 +61,13 @@ class RegistrationFormProcessor implements UserPresenter
 
     public function process(Request $request)
     {
-        $this->form = $this->factory->create($this->buildRegistrationForm());
+        $this->form = $this->formFactory->create($this->buildRegistrationForm());
 
         if ($request->isMethod('POST')) {
             $this->form->handleRequest($request);
 
             if ($this->form->isValid()) {
-                /** @var RegistrationFormData $data */
+                /** @var User $data */
                 $data = $this->form->getData();
 
                 $request = $this->buildRequest($data);
@@ -82,21 +86,6 @@ class RegistrationFormProcessor implements UserPresenter
         return $this->isValid;
     }
 
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    public function setErrors(array $errors)
-    {
-        $this->errors = $errors;
-    }
-
-    public function hasErrors()
-    {
-        return $this->errors != null;
-    }
-
     public function getUser()
     {
         return $this->user;
@@ -107,29 +96,13 @@ class RegistrationFormProcessor implements UserPresenter
         $this->user = $user;
     }
 
-    private function buildRequest(RegistrationFormData $data)
+    private function buildRequest($data)
     {
-        $salt = TokenGenerator::generateToken();
-        $user = $this->userBuilder->build('', '', $salt);
-
-        $encoder = $this->encoderFactory->getEncoder($user);
-
-        $request = $this->buildInteractorRequest($data, $encoder, $salt);
-
-        return $request;
-    }
-
-    protected function buildInteractorRequest(RegistrationFormData $data, $encoder, $salt)
-    {
-        $request = new RegisterUserRequest(
-            $data->getEmail(),
-            $encoder->encodePassword($data->getPassword(), $salt),
-            $salt);
-        return $request;
+        return $this->requestFactory->create('register_user', $data->toModel());
     }
 
     protected function buildRegistrationForm()
     {
-        return new RegistrationForm();
+        return new RegistrationForm($this->entityFactory->getClass('user'));
     }
 }

@@ -86,6 +86,8 @@ menu:
     homepage: Home
     login: Login
     logout: Logout
+    logs: Logs
+    pages: Pages
     register: Register
     users: Users
     welcome: Welcome, <a class="navbar-link" href="%url%" title="%username%">%username%</a> %exit_impersonate%

@@ -2,15 +2,12 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
-use Diside\SecurityBundle\Builder\UserBuilder;
+use Diside\SecurityBundle\Entity\User as UserEntity;
 use Diside\SecurityBundle\Exception\UnauthorizedException;
-use Diside\SecurityBundle\Form\Data\UserFormData;
 use Diside\SecurityBundle\Form\UserForm;
 use Diside\SecurityComponent\Helper\TokenGenerator;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
-use Diside\SecurityComponent\Interactor\Presenter\CompaniesPresenter;
 use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
-use Diside\SecurityComponent\Interactor\Request\FindCompaniesRequest;
 use Diside\SecurityComponent\Interactor\Request\GetUserByIdRequest;
 use Diside\SecurityComponent\Interactor\Request\SaveUserRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
@@ -21,55 +18,27 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class UserFormProcessor extends BaseFormProcessor implements UserPresenter, CompaniesPresenter
+class UserFormProcessor extends BaseFormProcessor implements UserPresenter
 {
     /** @var User */
     private $user;
 
-    /** @var array */
-    private $companies = array();
-
-    /** @var int */
-    private $totalCompanies;
-
-    /** @var EncoderFactoryInterface */
-    private $encoderFactory;
-
-    /** @var UserBuilder */
-    private $userBuilder;
-
-    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext, EncoderFactoryInterface $encoderFactory, UserBuilder $userBuilder)
-    {
-        parent::__construct($formFactory, $interactorFactory, $securityContext);
-
-        $this->encoderFactory = $encoderFactory;
-        $this->userBuilder = $userBuilder;
-    }
-
     protected function buildFormData($id)
     {
-        $currentUser = $this->getAuthenticatedUser();
-
-        if ($currentUser->isSuperadmin())
-            $this->findCompanies();
+        $entity = $this->createEntity('user');
 
         if ($id != null) {
             $this->retrieveUserById($id);
 
-            $data = $this->getUser();
-
-            return new UserFormData($data, $this->companies);
+            $model = $this->getUser();
+            $entity->fromModel($model);
         } else {
-            $salt = TokenGenerator::generateToken();
-
-            $user = $this->userBuilder->build('', '', $salt);
-            $data = new UserFormData($user, $this->companies);
-
-            if ($currentUser->isAdmin())
-                $data->setCompany((string)$currentUser->getCompany());
-
-            return $data;
+            if ($this->checkPermission('has_same_company')) {
+                $entity->setCompany($this->createEntity('company', $this->getAuthenticatedUser()->getCompany()));
+            }
         }
+
+        return $entity;
     }
 
     public function getUser()
@@ -84,36 +53,21 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
 
     protected function buildRequest()
     {
-        /** @var UserFormData $data */
+        /** @var UserEntity $data */
         $data = $this->getFormData();
 
-        $currentUser = $this->getAuthenticatedUser();
+        $model = $data->toModel();
 
-        $user = $data->getUser();
-
-        $request = new SaveUserRequest(
-            $currentUser->getId(),
-            $data->getId(),
-            $data->getEmail(),
-            $currentUser->isSameAs($user) ? null : $this->encodePassword($data->getPassword(), $user),
-            $user->getSalt(),
-            $data->isActive(),
-            $data->getRoles());
-
-        if ($currentUser->isSuperAdmin()) {
-            $request->companyId = $data->getCompanyId();
-        }
+        $request = $this->createRequest(
+            'save_user',
+            $model,
+            array(
+                'set_password' => $this->checkPermission('set_password', $model),
+                'set_company' => $this->checkPermission('set_company')
+            )
+        );
 
         return $request;
-    }
-
-    protected function findCompanies()
-    {
-        $user = $this->getAuthenticatedUser();
-
-        $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::FIND_COMPANIES);
-        $request = new FindCompaniesRequest($user->getId());
-        $interactor->process($request, $this);
     }
 
     protected function retrieveUserById($id)
@@ -127,40 +81,18 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
             throw new NotFoundHttpException;
         }
 
-        $currentUser = $this->getAuthenticatedUser();
         $user = $this->getUser();
 
-        if (!($currentUser->isSuperadmin() || ($currentUser->isAdmin() && $currentUser->hasSameCompanyAs($user)) || $currentUser->isSameAs($user)))
+        if (!$this->checkPermission('can_edit', $user)) {
             throw new UnauthorizedException;
-    }
-
-    /** @return array */
-    public function getCompanies()
-    {
-        return $this->companies;
-    }
-
-    public function setCompanies(array $companies)
-    {
-        $this->companies = $companies;
-    }
-
-    /** @return int */
-    public function getTotalCompanies()
-    {
-        return $this->totalCompanies;
-    }
-
-    public function setTotalCompanies($total)
-    {
-        $this->totalCompanies = $total;
+        }
     }
 
     protected function buildForm()
     {
         $user = $this->getAuthenticatedUser();
 
-        return new UserForm($user);
+        return new UserForm($user, $this->getInteractorFactory(), $this->getEntityFactory());
     }
 
     protected function getSaveInteractorName()
@@ -171,16 +103,6 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter, Comp
     protected function evaluateRedirect()
     {
         $this->setRedirectTo($this->isButtonClicked('save_and_close') ? self::REDIRECT_TO_LIST : null);
-    }
-
-    private function encodePassword($password, User $user)
-    {
-        if ($password == null)
-            return null;
-
-        $encoder = $this->encoderFactory->getEncoder($user);
-
-        return $encoder->encodePassword($password, $user->getSalt());
     }
 
 

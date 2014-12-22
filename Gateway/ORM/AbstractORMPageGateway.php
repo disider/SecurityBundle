@@ -47,7 +47,6 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
         }
 
         $entity = $this->prePersist($entity, $model);
-
         $this->persistAndFlush($entity);
 
         return $this->convertEntity($entity);
@@ -76,13 +75,13 @@ abstract class AbstractORMPageGateway extends AbstractORMBaseGateway implements 
         return $qb;
     }
 
-    public function findOneByLanguageAndUrl($language, $url)
+    public function findOneByLanguageAndUrl($locale, $url)
     {
         $qb = $this->createQueryBuilder()
             ->leftJoin(self::ROOT_ALIAS . '.translations', 'translation')
-            ->where(sprintf('(%s.language = :language AND %s.url = :url)', self::ROOT_ALIAS, self::ROOT_ALIAS))
-            ->orWhere('(translation.language = :language AND translation.url = :url)')
-            ->setParameter('language', $language)
+            ->where(sprintf('(%s.locale = :locale AND %s.url = :url)', self::ROOT_ALIAS, self::ROOT_ALIAS))
+            ->orWhere('(translation.locale = :locale AND translation.url = :url)')
+            ->setParameter('locale', $locale)
             ->setParameter('url', $url);
 
         return $this->convertEntity($qb->getQuery()->getOneOrNullResult());

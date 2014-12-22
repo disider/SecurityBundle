@@ -15,7 +15,11 @@ class CompanyFormTest extends FormTestCase
     {
         parent::setUp();
 
-        $this->form = new CompanyForm();
+        $entityFactory = m::mock('Diside\SecurityBundle\Factory\EntityFactory');
+        $entityFactory->shouldReceive('getClass')
+            ->andReturn('Diside\SecurityBundle\Entity\Company');
+
+        $this->form = new CompanyForm($entityFactory);
     }
 
     /**
@@ -49,7 +53,7 @@ class CompanyFormTest extends FormTestCase
         /** @var \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver */
         $resolver = m::mock('Symfony\Component\OptionsResolver\OptionsResolverInterface');
         $expect = $resolver->shouldReceive('setDefaults')
-            ->with(array('data_class' => 'Diside\SecurityBundle\Form\Data\CompanyFormData'))
+            ->with(array('data_class' => 'Diside\SecurityBundle\Entity\Company'))
             ->once();
 
         $this->form->setDefaultOptions($resolver);

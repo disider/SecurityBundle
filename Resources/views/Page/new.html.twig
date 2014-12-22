@@ -10,7 +10,6 @@
 {%  block javascripts %}
     {{ parent() }}
 
-    <script src="/bundles/disidesecurity/js/ckeditor/ckeditor.js""></script>
-    <script src="/bundles/disidesecurity/js/ckeditor/adapters/jquery.js""></script>
+    {% include 'DisideSecurityBundle:Page:_javascript.html.twig' %}
 
 {%  endblock javascripts %}

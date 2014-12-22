@@ -10,7 +10,6 @@
 {%  block javascripts %}
     {{ parent() }}
 
-    <script src="/bundles/disidesecurity/js/tinymce/tinymce.min.js""></script>
-    <script src="/bundles/disidesecurity/js/tinymce/jquery.tinymce.min.js""></script>
+    {% include 'DisideSecurityBundle:Page:_javascript.html.twig' %}
 
 {%  endblock javascripts %}

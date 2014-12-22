@@ -24,7 +24,7 @@ class PageTest extends EntityTest
         /** @var Model $converted */
         $converted = $entity->toModel();
 
-        $this->assertField($converted, $model, 'language');
+        $this->assertField($converted, $model, 'locale');
         $this->assertField($converted, $model, 'url');
         $this->assertField($converted, $model, 'title');
         $this->assertField($converted, $model, 'content');
@@ -52,5 +52,6 @@ class PageTest extends EntityTest
         $converted = $entity->toModel();
 
         $this->assertThat($converted->countTranslations(), $this->equalTo(1));
+        $this->assertThat($converted->getTranslation('it')->getTitle(), $this->equalTo('titolo'));
     }
 }

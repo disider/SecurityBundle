@@ -96,7 +96,6 @@ class RegistrationController extends BaseController
         if ($this->getAuthenticatedUser() != null)
             return $this->redirect($this->generateUrl('homepage'));
 
-
         return array();
     }
 }

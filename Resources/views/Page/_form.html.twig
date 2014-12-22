@@ -17,7 +17,7 @@
 
         <ul class="nav nav-tabs" role="tablist">
             {% for locale, translationForm in form.translations %}
-                <li role="presentation" class="{{ loop.index0 == 0 ? 'active' : ''}}">
+                <li role="presentation" class="{{ loop.index0 == 0 ? 'active' : ''}} {{ translationForm.vars.valid ? '' : 'error'}}">
                     <a href="#{{ locale }}" role="tab" data-toggle="tab">{{ ('locale.' ~ locale )|trans }}</a>
                 </li>
             {% endfor %}

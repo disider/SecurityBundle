@@ -20,7 +20,7 @@ class PageTranslationTest extends EntityTest
 
         $converted = $entity->toModel();
 
-        $this->assertField($converted, $model, 'language');
+        $this->assertField($converted, $model, 'locale');
         $this->assertField($converted, $model, 'url');
         $this->assertField($converted, $model, 'title');
         $this->assertField($converted, $model, 'content');

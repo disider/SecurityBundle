@@ -2,8 +2,8 @@
 
 namespace Diside\SecurityBundle\Form\Processor;
 
+use Diside\SecurityBundle\Entity\Company as CompanyEntity;
 use Diside\SecurityBundle\Form\CompanyForm;
-use Diside\SecurityBundle\Form\Data\CompanyFormData;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter\CompanyPresenter;
 use Diside\SecurityComponent\Interactor\Request\GetCompanyRequest;
@@ -21,22 +21,16 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
 
     protected function buildFormData($id)
     {
+        /** @var CompanyEntity $entity */
+        $entity = $this->createEntity('company');
+
         if ($id != null) {
-            $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::GET_COMPANY);
+            $company = $this->retrieveCompanyById($id);
 
-            $request = new GetCompanyRequest($id);
-            $interactor->process($request, $this);
-
-            if ($this->hasErrors()) {
-                throw new NotFoundHttpException;
-            }
-
-            $company = $this->getCompany();
-
-            return new CompanyFormData($company);
-        } else {
-            return new CompanyFormData();
+            $entity->fromModel($company);
         }
+
+        return $entity;
     }
 
     public function getCompany()
@@ -51,15 +45,15 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
 
     protected function buildRequest()
     {
-        /** @var CompanyFormData $data */
+        /** @var CompanyEntity $data */
         $data = $this->getFormData();
 
-        return new SaveCompanyRequest($data->getId(), $data->getName());
+        return $this->createRequest('save_company', $data);
     }
 
     protected function buildForm()
     {
-        return new CompanyForm();
+        return new CompanyForm($this->getEntityClass('company'));
     }
 
     protected function getSaveInteractorName()
@@ -70,5 +64,23 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
     protected function evaluateRedirect()
     {
         $this->setRedirectTo($this->isButtonClicked('save_and_close') ? self::REDIRECT_TO_LIST : null);
+    }
+
+    /**
+     * @param $id
+     * @return Company
+     */
+    protected function retrieveCompanyById($id)
+    {
+        $interactor = $this->getInteractorFactory()->get(SecurityInteractorRegister::GET_COMPANY);
+
+        $request = new GetCompanyRequest($id);
+        $interactor->process($request, $this);
+
+        if ($this->hasErrors()) {
+            throw new NotFoundHttpException;
+        }
+
+        return $this->getCompany();
     }
 }

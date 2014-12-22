@@ -19,18 +19,8 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPresenter
 {
-
+    /** @var User */
     private $user;
-
-    /** @var EncoderFactoryInterface */
-    private $encoderFactory;
-
-    public function __construct(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext, EncoderFactoryInterface $encoderFactory)
-    {
-        parent::__construct($formFactory, $interactorFactory, $securityContext);
-
-        $this->encoderFactory = $encoderFactory;
-    }
 
     /** @var User */
     public function process(Request $request, $id = null)
@@ -57,13 +47,8 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
     {
         /** @var ChangePasswordFormData $data */
         $data = $this->getFormData();
-        $user = $this->getAuthenticatedUser();
 
-        return new ChangePasswordRequest($user->getId(),
-            $data->getId(),
-            $this->encodePassword($user, $data->getCurrentPassword()),
-            $this->encodePassword($user, $data->getNewPassword())
-        );
+        return $this->createRequest('change_password', $data);
     }
 
     protected function getSaveInteractorName()
@@ -79,15 +64,5 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
     protected function buildFormData($id)
     {
         return new ChangePasswordFormData($id);
-    }
-
-    private function encodePassword(LoggedUser $user, $password)
-    {
-        if ($password == null)
-            return $password;
-
-        $encoder = $this->encoderFactory->getEncoder($user);
-
-        return $encoder->encodePassword($password, $user->getSalt());
     }
 }

@@ -38,8 +38,10 @@ class ORMPageGatewayTest extends RepositoryTestCase
      */
     public function testFindOneByLanguageAndUrl()
     {
-        $page = $this->givenPage('en', 'page');
+        $page = $this->buildPage('en', 'page');
         $this->givenPageTranslation($page, 'it', 'pagina');
+
+        $this->entityManager->clear();
 
         $page = $this->pageGateway->findOneByLanguageAndUrl('en', 'page');
         $this->assertPage($page, 'en', 'page');
@@ -79,9 +81,14 @@ class ORMPageGatewayTest extends RepositoryTestCase
 
     private function givenPage($language, $url, $title = '')
     {
-        $page = new Page(null, $language, $url, $title, '');
+        $page = $this->buildPage($language, $url, $title);
 
         return $this->pageGateway->save($page);
+    }
+
+    private function buildPage($language, $url, $title = '')
+    {
+        return new Page(null, $language, $url, $title, '');
     }
 
     private function givenPageTranslation(Page $page, $language, $url, $title = '')

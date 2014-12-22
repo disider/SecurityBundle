@@ -8,6 +8,14 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class RegistrationForm extends AbstractType
 {
+    /** @var string */
+    private $dataClass;
+
+    public function __construct($dataClass)
+    {
+        $this->dataClass = $dataClass;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('email', 'text', array('label' => 'form.email'));
@@ -21,7 +29,7 @@ class RegistrationForm extends AbstractType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array('data_class' => 'Diside\SecurityBundle\Form\Data\RegistrationFormData'));
+        $resolver->setDefaults(array('data_class' => $this->dataClass));
     }
 
 }

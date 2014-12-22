@@ -33,9 +33,18 @@
             <parameter key="no-reply">%noreply_display_name%</parameter>
         </parameter>
 
-        <parameter key="security.locales">%locales%</parameter>
+        <parameter key="security.available_locales">%available_locales%</parameter>
 
-        <parameter key="diside.security.builder.user_builder.class">Diside\SecurityBundle\Builder\UserBuilder</parameter>
+        <parameter key="entity_factory.class">Diside\SecurityBundle\Factory\EntityFactory</parameter>
+        <parameter key="request_factory.class">Diside\SecurityBundle\Factory\RequestFactory</parameter>
+        <parameter key="permission_checker.class">Diside\SecurityBundle\Security\PermissionChecker</parameter>
+        <parameter key="locale_provider.class">Diside\SecurityBundle\Provider\LocaleProvider</parameter>
+
+        <parameter key="user.class">Diside\SecurityBundle\Entity\User</parameter>
+        <parameter key="company.class">Diside\SecurityBundle\Entity\Company</parameter>
+        <parameter key="log.class">Diside\SecurityBundle\Entity\Log</parameter>
+        <parameter key="page.class">Diside\SecurityBundle\Entity\Page</parameter>
+        <parameter key="page_translation.class">Diside\SecurityBundle\Entity\PageTranslation</parameter>
 
     </parameters>
 
@@ -45,36 +54,39 @@
             <argument type="service" id="diside.security.gateway.log_gateway" />
         </service>
 
-        <service id="diside.user_builder" class="%diside.security.builder.user_builder.class%" >
-        </service>
-
         <service id="company_form_processor" class="%security.form.processor.company_form_processor.class%">
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
+            <argument type="service" id="entity_factory" />
+            <argument type="service" id="request_factory" />
+            <argument type="service" id="permission_checker" />
         </service>
 
         <service id="page_form_processor" class="%security.form.processor.page_form_processor.class%">
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
-            <argument>%kernel.default_locale%</argument>
-            <argument>%security.locales%</argument>
+            <argument type="service" id="entity_factory" />
+            <argument type="service" id="request_factory" />
+            <argument type="service" id="permission_checker" />
+            <argument type="service" id="locale_provider" />
         </service>
 
         <service id="user_form_processor" class="%security.form.processor.user_form_processor.class%">
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
-            <argument type="service" id="security.encoder_factory" />
-            <argument type="service" id="diside.user_builder" />
+            <argument type="service" id="entity_factory" />
+            <argument type="service" id="request_factory" />
+            <argument type="service" id="permission_checker" />
         </service>
 
         <service id="registration_form_processor" class="%security.form.processor.registration_form_processor.class%">
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
-            <argument type="service" id="security.encoder_factory" />
-            <argument type="service" id="diside.user_builder" />
+            <argument type="service" id="entity_factory" />
+            <argument type="service" id="request_factory" />
         </service>
 
         <service id="request_reset_password_form_processor" class="%security.form.processor.request_reset_password_form_processor.class%">
@@ -92,7 +104,9 @@
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.context"/>
-            <argument type="service" id="security.encoder_factory" />
+            <argument type="service" id="entity_factory" />
+            <argument type="service" id="request_factory" />
+            <argument type="service" id="permission_checker" />
         </service>
 
         <service id="security.mailer" class="%security.mailer.default_mailer.class%">
@@ -103,6 +117,44 @@
             <argument>%security.mailer.emails%</argument>
         </service>
 
+        <service id="entity_factory" class="%entity_factory.class%">
+            <argument type="service" id="security.context"/>
+
+            <call method="register">
+                <argument>user</argument>
+                <argument>%user.class%</argument>
+            </call>
+            <call method="register">
+                <argument>company</argument>
+                <argument>%company.class%</argument>
+            </call>
+            <call method="register">
+                <argument>log</argument>
+                <argument>%log.class%</argument>
+            </call>
+            <call method="register">
+                <argument>page</argument>
+                <argument>%page.class%</argument>
+            </call>
+            <call method="register">
+                <argument>page_translation</argument>
+                <argument>%page_translation.class%</argument>
+            </call>
+        </service>
+
+        <service id="request_factory" class="%request_factory.class%">
+            <argument type="service" id="security.context"/>
+            <argument type="service" id="security.encoder_factory" />
+        </service>
+
+        <service id="permission_checker" class="%permission_checker.class%">
+            <argument type="service" id="security.context"/>
+        </service>
+
+        <service id="locale_provider" class="%locale_provider.class%">
+            <argument>%kernel.default_locale%</argument>
+            <argument>%security.available_locales%</argument>
+        </service>
     </services>
 
 </container>
