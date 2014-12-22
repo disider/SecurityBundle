@@ -53,7 +53,7 @@ class ResetPasswordFormProcessor implements UserPresenter
 
     public function process(Request $request, $token)
     {
-        $this->form = $this->factory->create(new ResetPasswordForm());
+        $this->form = $this->factory->create($this->buildResetPasswordForm());
 
         $this->getUserByResetPasswordToken($token);
 
@@ -134,4 +134,8 @@ class ResetPasswordFormProcessor implements UserPresenter
         return array($interactor, $request);
     }
 
+    protected function buildResetPasswordForm()
+    {
+        return new ResetPasswordForm();
+    }
 }

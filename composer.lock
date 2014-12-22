@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1e349a1dfe163cf89d0780422f717c8f",
+    "hash": "e0200b1136721943875c42b2d8ae7ec9",
     "packages": [
         {
             "name": "diside/security-component",

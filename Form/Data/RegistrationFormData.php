@@ -13,13 +13,13 @@ class RegistrationFormData
      * @Assert\Email(message="error.wrong_email")
      * @var string
      */
-    private $email;
+    protected $email;
 
     /**
-     * Assert\NotBlank(message="error.empty_password")
+     * @Assert\NotBlank(message="error.empty_password")
      * @var string
      */
-    private $password;
+    protected $password;
 
     public function setEmail($email)
     {
