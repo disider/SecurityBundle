@@ -7,9 +7,6 @@ use Diside\SecurityComponent\Model\ChangePassword;
 
 class ChangePasswordFormData
 {
-    /** @var string */
-    private $id;
-
     /**
      * Assert\NotBlank(message="error.empty_current_password")
      * @var string
@@ -21,20 +18,6 @@ class ChangePasswordFormData
      * @var string
      */
     private $newPassword;
-
-    public function __construct($id) {
-        $this->id = $id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
 
     public function setCurrentPassword($currentPassword)
     {

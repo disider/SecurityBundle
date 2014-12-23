@@ -3,8 +3,12 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Factory\EntityFactory;
+use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor;
+use Diside\SecurityBundle\Security\PermissionChecker;
+use Diside\SecurityBundle\Tests\FormProcessorTestCase;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 use Diside\SecurityBundle\Tests\Mock\InteractorMock;
 use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
@@ -23,7 +27,10 @@ class ResetPasswordFormProcessorTest extends FormProcessorTestCase
     protected function buildProcessor(
         FormFactoryInterface $formFactory,
         InteractorFactory $interactorFactory,
-        SecurityContextInterface $securityContext
+        SecurityContextInterface $securityContext,
+        EntityFactory $entityFactory,
+        RequestFactory $requestFactory,
+        PermissionChecker $permissionChecker
     ) {
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
         $encoder->shouldReceive('encodePassword');
@@ -33,11 +40,6 @@ class ResetPasswordFormProcessorTest extends FormProcessorTestCase
             ->andReturn($encoder);
 
         return new ResetPasswordFormProcessor($formFactory, $interactorFactory, $encoderFactory);
-    }
-
-    protected function buildValidData($object)
-    {
-        return new ResetPasswordFormData($user);
     }
 
     protected function getFormName()
@@ -111,6 +113,11 @@ class ResetPasswordFormProcessorTest extends FormProcessorTestCase
         $this->processor->process($request, '123');
 
         $this->assertTrue($this->processor->hasErrors());
+    }
+
+    protected function buildFormData()
+    {
+        return new ResetPasswordFormData();
     }
 
 }

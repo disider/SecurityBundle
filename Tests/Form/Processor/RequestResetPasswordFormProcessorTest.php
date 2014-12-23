@@ -3,11 +3,15 @@
 
 namespace Diside\SecurityBundle\Tests\Form\Processor;
 
+use Diside\SecurityBundle\Factory\EntityFactory;
+use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Form\Data\RequestResetPasswordFormData;
+use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor;
+use Diside\SecurityBundle\Security\PermissionChecker;
+use Diside\SecurityBundle\Tests\FormProcessorTestCase;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 use Diside\SecurityBundle\Tests\Mock\InteractorMock;
-use Diside\SecurityBundle\Tests\Mock\UserInteractorMock;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Mockery as m;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
@@ -23,14 +27,12 @@ class RequestResetPasswordFormProcessorTest extends FormProcessorTestCase
     protected function buildProcessor(
         FormFactoryInterface $formFactory,
         InteractorFactory $interactorFactory,
-        SecurityContextInterface $securityContext
+        SecurityContextInterface $securityContext,
+        EntityFactory $entityFactory,
+        RequestFactory $requestFactory,
+        PermissionChecker $permissionChecker
     ) {
         return new RequestResetPasswordFormProcessor($formFactory, $interactorFactory);
-    }
-
-    protected function buildValidData($object)
-    {
-        return new RequestResetPasswordFormData($object);
     }
 
     protected function getFormName()
@@ -100,5 +102,11 @@ class RequestResetPasswordFormProcessorTest extends FormProcessorTestCase
         $errors = $this->processor->getErrors();
         $this->assertThat($errors[0], $this->equalTo('Undefined'));
     }
+
+    protected function buildFormData()
+    {
+        return new RequestResetPasswordFormData();
+    }
+
 
 }

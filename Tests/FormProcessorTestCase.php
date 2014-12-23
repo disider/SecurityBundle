@@ -1,12 +1,16 @@
 <?php
 
-namespace Diside\SecurityBundle\Tests\Form\Processor;
+namespace Diside\SecurityBundle\Tests;
 
+use Diside\SecurityBundle\Factory\EntityFactory;
+use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Form\Processor\BaseFormProcessor;
 use Diside\SecurityBundle\Security\LoggedUser;
+use Diside\SecurityBundle\Security\PermissionChecker;
 use Diside\SecurityBundle\Tests\Mock\DummyToken;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
+use Diside\SecurityComponent\Interactor\Request as InteractorRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\Page;
 use Diside\SecurityComponent\Model\User;
@@ -31,11 +35,29 @@ abstract class FormProcessorTestCase extends WebTestCase
     /** @var SecurityContextInterface */
     private $securityContext;
 
-    protected abstract function buildProcessor(FormFactoryInterface $formFactory, InteractorFactory $interactorFactory, SecurityContextInterface $securityContext);
+    /** @var PermissionChecker */
+    private $permissionChecker;
 
-    protected abstract function buildValidData($object);
+    /** @var EntityFactory */
+    private $entityFactory;
+
+    protected abstract function buildProcessor(
+        FormFactoryInterface $formFactory,
+        InteractorFactory $interactorFactory,
+        SecurityContextInterface $securityContext,
+        EntityFactory $entityFactory,
+        RequestFactory $requestFactory,
+        PermissionChecker $permissionChecker
+    );
 
     protected abstract function getFormName();
+
+    protected abstract function buildFormData();
+
+    protected function mockEntities()
+    {
+
+    }
 
     protected function setUp()
     {
@@ -54,19 +76,36 @@ abstract class FormProcessorTestCase extends WebTestCase
 
         $this->interactorFactory = m::mock('Diside\SecurityComponent\Interactor\InteractorFactory');
 
+        $this->entityFactory = $this->buildEntityFactory();
+
+        $this->mockEntities();
+
+        $requestFactory = $this->buildRequestFactory();
+        $this->permissionChecker = m::mock('Diside\SecurityBundle\Security\PermissionChecker');
+
         $this->securityContext = m::mock('Symfony\Component\Security\Core\SecurityContextInterface');
 
-        $this->processor = $this->buildProcessor($formFactory, $this->interactorFactory, $this->securityContext);
+        $this->processor = $this->buildProcessor(
+            $formFactory,
+            $this->interactorFactory,
+            $this->securityContext,
+            $this->entityFactory,
+            $requestFactory,
+            $this->permissionChecker
+        );
+
         $this->formName = $this->getFormName();
     }
 
-    protected function givenValidData($object = null)
+    protected function givenValidData($model = null)
     {
-        $data = $this->buildValidData($object);
+        $entity = $this->buildFormData();
+        if($model)
+            $entity->fromModel($model);
 
-        $this->givenValidForm($data);
+        $this->givenValidForm($entity);
 
-        return $this->givenPostRequest($data);
+        return $this->givenPostRequest($entity);
     }
 
     protected function givenInvalidData()
@@ -188,5 +227,48 @@ abstract class FormProcessorTestCase extends WebTestCase
 
         return $loggedUser;
     }
+
+    protected function buildEntityFactory()
+    {
+        $this->entityFactory = m::mock('Diside\SecurityBundle\Factory\EntityFactory');
+
+        return $this->entityFactory;
+    }
+
+    /**
+     * @return m\MockInterface
+     */
+    protected function buildRequestFactory()
+    {
+        $dummyRequest = new DummyRequest();
+
+        $requestFactory = m::mock('Diside\SecurityBundle\Factory\RequestFactory');
+        $requestFactory->shouldReceive('create')
+            ->andReturn($dummyRequest);
+
+        return $requestFactory;
+    }
+
+    protected function setPermission($permission, $value)
+    {
+        $this->permissionChecker->shouldReceive('check')
+            ->with($permission, m::any())
+            ->andReturn($value);
+    }
+
+    protected function mockEntity($name, $entity)
+    {
+        $this->entityFactory->shouldReceive('create')
+            ->with($name, null)
+            ->andReturn($entity);
+        $this->entityFactory->shouldReceive('getClass')
+            ->with($name)
+            ->andReturn(get_class($entity));
+    }
+
+}
+
+class DummyRequest implements InteractorRequest
+{
 
 }
