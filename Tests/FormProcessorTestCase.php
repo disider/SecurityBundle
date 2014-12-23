@@ -261,6 +261,9 @@ abstract class FormProcessorTestCase extends WebTestCase
         $this->entityFactory->shouldReceive('create')
             ->with($name, null)
             ->andReturn($entity);
+        $this->entityFactory->shouldReceive('create')
+            ->with($name)
+            ->andReturn($entity);
         $this->entityFactory->shouldReceive('getClass')
             ->with($name)
             ->andReturn(get_class($entity));

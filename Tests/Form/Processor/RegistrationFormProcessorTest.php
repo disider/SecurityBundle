@@ -5,7 +5,9 @@ namespace Diside\SecurityBundle\Tests\Form\Processor;
 use Diside\SecurityBundle\Factory\EntityFactory;
 use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Entity\User as UserEntity;
+use Diside\SecurityBundle\Form\Data\RegistrationFormData;
 use Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor;
+use Diside\SecurityBundle\Form\RegistrationForm;
 use Diside\SecurityBundle\Security\PermissionChecker;
 use Diside\SecurityBundle\Tests\FormProcessorTestCase;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
@@ -15,6 +17,7 @@ use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\User;
 use Mockery as m;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,13 +41,15 @@ class RegistrationFormProcessorTest extends FormProcessorTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($encoder);
 
+        $registrationForm = new RegistrationForm(get_class($this->buildFormData()));
+
         return new RegistrationFormProcessor(
             $formFactory,
             $interactorFactory,
             $entityFactory,
-            $requestFactory
+            $requestFactory,
+            $registrationForm
         );
-
     }
 
     protected function buildValidData($object)

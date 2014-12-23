@@ -6,6 +6,7 @@ use Diside\SecurityBundle\Tests\Mock\DummyToken;
 use Mockery as m;
 use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityComponent\Model\User;
+use Diside\SecurityBundle\Form\Data\RegistrationFormData;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class RequestFactoryTest extends \PHPUnit_Framework_TestCase
@@ -22,6 +23,8 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $encoder = m::mock('Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface');
+        $encoder->shouldReceive('encodePassword')
+            ->andReturn('encodedPassword');
 
         $encoderFactory = m::mock('Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface');
         $encoderFactory->shouldReceive('getEncoder')
@@ -50,7 +53,10 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
     public function testRegisterUser()
     {
         $user = $this->givenUser();
-        $request = $this->factory->create('register_user', $user);
+        $data = new RegistrationFormData();
+        $data->setEmail('user@example.com');
+        $data->setPassword('password');
+        $request = $this->factory->create('register_user', $data, array('user' => $user));
 
         $this->assertInstanceOf('\Diside\SecurityComponent\Interactor\Request\RegisterUserRequest', $request);
     }
