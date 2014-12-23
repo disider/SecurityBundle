@@ -63,6 +63,6 @@ class ChangePasswordFormProcessor extends BaseFormProcessor implements UserPrese
 
     protected function buildFormData($id)
     {
-        return new ChangePasswordFormData($id);
+        return new ChangePasswordFormData();
     }
 }

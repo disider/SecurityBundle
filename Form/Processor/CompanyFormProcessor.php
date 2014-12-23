@@ -53,7 +53,7 @@ class CompanyFormProcessor extends BaseFormProcessor implements CompanyPresenter
 
     protected function buildForm()
     {
-        return new CompanyForm($this->getEntityClass('company'));
+        return new CompanyForm($this->getEntityFactory());
     }
 
     protected function getSaveInteractorName()

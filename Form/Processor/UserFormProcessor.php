@@ -25,6 +25,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter
 
     protected function buildFormData($id)
     {
+        /** @var UserEntity $entity */
         $entity = $this->createEntity('user');
 
         if ($id != null) {
@@ -33,9 +34,7 @@ class UserFormProcessor extends BaseFormProcessor implements UserPresenter
             $model = $this->getUser();
             $entity->fromModel($model);
         } else {
-            if ($this->checkPermission('has_same_company')) {
-                $entity->setCompany($this->createEntity('company', $this->getAuthenticatedUser()->getCompany()));
-            }
+            $entity->setCompany($this->createEntity('company', $this->getAuthenticatedUser()->getCompany()));
         }
 
         return $entity;
