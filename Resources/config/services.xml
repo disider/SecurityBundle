@@ -16,10 +16,16 @@
         <parameter key="security.form.processor.running_checklist_form_processor.class">Diside\SecurityBundle\Form\Processor\RunningChecklistFormProcessor</parameter>
         <parameter key="security.form.processor.share_request_form_processor.class">Diside\SecurityBundle\Form\Processor\ShareRequestFormProcessor</parameter>
 
+        <!-- Form processor -->
         <parameter key="security.form.processor.registration_form_processor.class">Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor</parameter>
         <parameter key="security.form.processor.request_reset_password_form_processor.class">Diside\SecurityBundle\Form\Processor\RequestResetPasswordFormProcessor</parameter>
         <parameter key="security.form.processor.reset_password_form_processor.class">Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor</parameter>
         <parameter key="security.form.processor.change_password_form_processor.class">Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor</parameter>
+        <!-- Form data -->
+        <parameter key="security.form.registration_form_data.class">Diside\SecurityBundle\Form\Data\RegistrationFormData</parameter>
+        <!-- Forms -->
+        <parameter key="security.form.registration_form.class">Diside\SecurityBundle\Form\RegistrationForm</parameter>
+
 
         <parameter key="security.mailer.default_mailer.class">Diside\SecurityBundle\Mailer\DefaultMailer</parameter>
 
@@ -87,6 +93,7 @@
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="entity_factory" />
             <argument type="service" id="request_factory" />
+            <argument type="service" id="registration_form" />
         </service>
 
         <service id="request_reset_password_form_processor" class="%security.form.processor.request_reset_password_form_processor.class%">
@@ -108,6 +115,11 @@
             <argument type="service" id="request_factory" />
             <argument type="service" id="permission_checker" />
         </service>
+
+        <service id="registration_form" class="%security.form.registration_form.class%">
+            <argument>%security.form.registration_form_data.class%</argument>
+        </service>
+
 
         <service id="security.mailer" class="%security.mailer.default_mailer.class%">
             <argument type="service" id="templating" />

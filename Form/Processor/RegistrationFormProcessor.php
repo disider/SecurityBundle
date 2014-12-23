@@ -13,6 +13,7 @@ use Diside\SecurityComponent\Interactor\Presenter\UserPresenter;
 use Diside\SecurityComponent\Interactor\Request\RegisterUserRequest;
 use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Diside\SecurityComponent\Model\User;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -42,16 +43,21 @@ class RegistrationFormProcessor extends BasePresenter implements UserPresenter
     /** @var RequestFactory */
     private $requestFactory;
 
+    /** @var AbstractType registrationForm */
+    private $registrationForm;
+
     public function __construct(
         FormFactoryInterface $factory,
         InteractorFactory $interactorFactory,
         EntityFactory $entityFactory,
-        RequestFactory $requestFactory
+        RequestFactory $requestFactory,
+        AbstractType $registrationForm
     ) {
         $this->interactorFactory = $interactorFactory;
         $this->formFactory = $factory;
         $this->entityFactory = $entityFactory;
         $this->requestFactory = $requestFactory;
+        $this->registrationForm = $registrationForm;
     }
 
     public function getForm()
@@ -61,19 +67,17 @@ class RegistrationFormProcessor extends BasePresenter implements UserPresenter
 
     public function process(Request $request)
     {
-        $this->form = $this->formFactory->create($this->buildRegistrationForm());
+        $this->form = $this->formFactory->create($this->registrationForm);
 
         if ($request->isMethod('POST')) {
             $this->form->handleRequest($request);
 
             if ($this->form->isValid()) {
-                /** @var User $data */
                 $data = $this->form->getData();
 
                 $request = $this->buildRequest($data);
 
                 $interactor = $this->interactorFactory->get(SecurityInteractorRegister::REGISTER_USER);
-
                 $interactor->process($request, $this);
 
                 $this->isValid = !$this->hasErrors();
@@ -98,11 +102,9 @@ class RegistrationFormProcessor extends BasePresenter implements UserPresenter
 
     private function buildRequest($data)
     {
-        return $this->requestFactory->create('register_user', $data->toModel());
-    }
+        $user = $this->entityFactory->create('user');
+        $user->setSalt(TokenGenerator::generateToken());
 
-    protected function buildRegistrationForm()
-    {
-        return new RegistrationForm($this->entityFactory->getClass('user'));
+        return $this->requestFactory->create('register_user', $data, array('user' => $user->toModel()));
     }
 }

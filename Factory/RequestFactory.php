@@ -32,7 +32,7 @@ class RequestFactory
     {
         switch($name) {
             case 'save_user': return $this->createSaveUserRequest($data, $params);
-            case 'register_user': return $this->createRegisterUserRequest($data);
+            case 'register_user': return $this->createRegisterUserRequest($data, $params);
             case 'change_password': return $this->createChangePasswordRequest($data);
             case 'save_company': return $this->createSaveCompanyRequest($data);
             case 'save_page': return $this->createSavePageRequest($data);
@@ -82,11 +82,13 @@ class RequestFactory
         return $request;
     }
 
-    protected function createRegisterUserRequest($user)
+    protected function createRegisterUserRequest($data, $params)
     {
+        $user = $params['user'];
+
         return new RegisterUserRequest(
-            $user->getEmail(),
-            $this->encodePassword($user->getPassword(), $user),
+            $data->getEmail(),
+            $this->encodePassword($data->getPassword(), $user),
             $user->getSalt()
         );
     }
