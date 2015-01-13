@@ -9,6 +9,14 @@ use Diside\SecurityBundle\Form\Data\RequestResetPasswordFormData;
 
 class ResetPasswordForm extends AbstractType
 {
+    /** @var string */
+    private $dataClass;
+
+    public function __construct($dataClass)
+    {
+        $this->dataClass = $dataClass;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('password', 'password', array('label' => 'form.password'));
@@ -21,7 +29,7 @@ class ResetPasswordForm extends AbstractType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array('data_class' => 'Diside\SecurityBundle\Form\Data\ResetPasswordFormData'));
+        $resolver->setDefaults(array('data_class' => $this->dataClass));
     }
 
 }

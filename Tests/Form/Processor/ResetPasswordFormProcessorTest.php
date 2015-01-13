@@ -7,6 +7,7 @@ use Diside\SecurityBundle\Factory\EntityFactory;
 use Diside\SecurityBundle\Factory\RequestFactory;
 use Diside\SecurityBundle\Form\Data\ResetPasswordFormData;
 use Diside\SecurityBundle\Form\Processor\ResetPasswordFormProcessor;
+use Diside\SecurityBundle\Form\ResetPasswordForm;
 use Diside\SecurityBundle\Security\PermissionChecker;
 use Diside\SecurityBundle\Tests\FormProcessorTestCase;
 use Diside\SecurityBundle\Tests\Mock\ErrorInteractor;
@@ -39,7 +40,7 @@ class ResetPasswordFormProcessorTest extends FormProcessorTestCase
         $encoderFactory->shouldReceive('getEncoder')
             ->andReturn($encoder);
 
-        return new ResetPasswordFormProcessor($formFactory, $interactorFactory, $encoderFactory);
+        return new ResetPasswordFormProcessor($formFactory, $interactorFactory, $encoderFactory, new ResetPasswordForm('Diside\SecurityBundle\Form\Data\ResetPasswordForm'));
     }
 
     protected function getFormName()

@@ -23,8 +23,10 @@
         <parameter key="security.form.processor.change_password_form_processor.class">Diside\SecurityBundle\Form\Processor\ChangePasswordFormProcessor</parameter>
         <!-- Form data -->
         <parameter key="security.form.registration_form_data.class">Diside\SecurityBundle\Form\Data\RegistrationFormData</parameter>
+        <parameter key="security.form.reset_password_form_data.class">Diside\SecurityBundle\Form\Data\ResetPasswordFormData</parameter>
         <!-- Forms -->
         <parameter key="security.form.registration_form.class">Diside\SecurityBundle\Form\RegistrationForm</parameter>
+        <parameter key="security.form.reset_password_form.class">Diside\SecurityBundle\Form\ResetPasswordForm</parameter>
 
 
         <parameter key="security.mailer.default_mailer.class">Diside\SecurityBundle\Mailer\DefaultMailer</parameter>
@@ -58,6 +60,14 @@
 
         <service id="diside.logger" class="%security.logger.logger.class%" >
             <argument type="service" id="diside.security.gateway.log_gateway" />
+        </service>
+
+        <service id="registration_form" class="%security.form.registration_form.class%">
+            <argument>%security.form.registration_form_data.class%</argument>
+        </service>
+
+        <service id="reset_password_form" class="%security.form.reset_password_form.class%">
+            <argument>%security.form.reset_password_form_data.class%</argument>
         </service>
 
         <service id="company_form_processor" class="%security.form.processor.company_form_processor.class%">
@@ -105,6 +115,7 @@
             <argument type="service" id="form.factory"/>
             <argument type="service" id="interactor_factory"/>
             <argument type="service" id="security.encoder_factory" />
+            <argument type="service" id="reset_password_form" />
         </service>
 
         <service id="change_password_form_processor" class="%security.form.processor.change_password_form_processor.class%">
@@ -114,10 +125,6 @@
             <argument type="service" id="entity_factory" />
             <argument type="service" id="request_factory" />
             <argument type="service" id="permission_checker" />
-        </service>
-
-        <service id="registration_form" class="%security.form.registration_form.class%">
-            <argument>%security.form.registration_form_data.class%</argument>
         </service>
 
 

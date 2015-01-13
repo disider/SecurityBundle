@@ -10,7 +10,7 @@ class ResetPasswordFormData
      * @Assert\NotBlank(message="error.empty_password")
      * @var string
      */
-    private $password;
+    protected $password;
 
     public function setPassword($password)
     {
