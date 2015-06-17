@@ -2,20 +2,17 @@
 
 namespace Diside\SecurityBundle\Controller;
 
+use CheckIt\FrontendBundle\Form\Filter\LogFilterForm;
 use Diside\SecurityBundle\Presenter\LogsPresenter;
 use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter\LogPresenter;
 use Diside\SecurityComponent\Interactor\Request\DeleteLogRequest;
 use Diside\SecurityComponent\Interactor\Request\FindLogsRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
-use Whalist\FrontendBundle\Form\Filter\LogFilterForm;
-use Whalist\FrontendBundle\Form\Processor\LogFormProcessor;
-use Whalist\FrontendBundle\Presenter\BasePresenter;
-use Whalist\FrontendBundle\Presenter\PaginatorPresenter;
 
 /**
  * @Route("/logs")

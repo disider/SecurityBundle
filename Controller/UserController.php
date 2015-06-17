@@ -5,15 +5,14 @@ namespace Diside\SecurityBundle\Controller;
 use Diside\SecurityBundle\Form\Processor\UserFormProcessor;
 use Diside\SecurityBundle\Presenter\UserPresenter;
 use Diside\SecurityBundle\Presenter\UsersPresenter;
-use Diside\SecurityComponent\Interactor\InteractorFactory;
 use Diside\SecurityComponent\Interactor\Presenter\FindUsersPresenter;
 use Diside\SecurityComponent\Interactor\Request\DeleteUserRequest;
 use Diside\SecurityComponent\Interactor\Request\FindUsersRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
 
 /**
  * @Route("/users")

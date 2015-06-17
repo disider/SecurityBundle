@@ -5,11 +5,11 @@ namespace Diside\SecurityBundle\Controller;
 use Diside\SecurityBundle\Form\Processor\RegistrationFormProcessor;
 use Diside\SecurityBundle\Presenter\UserPresenter;
 use Diside\SecurityComponent\Interactor\Request\ConfirmUserRegistrationRequest;
+use Diside\SecurityComponent\Interactor\SecurityInteractorRegister;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Whalist\ChecklistComponent\Interactor\SecurityInteractorRegister;
 
 class RegistrationController extends BaseController
 {
